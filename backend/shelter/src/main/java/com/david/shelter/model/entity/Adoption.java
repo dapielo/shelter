@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,6 +25,7 @@ import lombok.Setter;
 @Getter 
 @Setter 
 @NoArgsConstructor 
+@AllArgsConstructor 
 @Table (name = "adoptions")
 public class Adoption {
 
@@ -35,12 +37,12 @@ public class Adoption {
     @ManyToOne
     @JoinColumn (name = "user_id", nullable = false)
     @NotNull 
-    private User user;
+    private User adopter;
 
     // Igual que el la anterior, cuando se trata de las adopciones hago siempre las consultas en esta tabla filtrando por el id que necesito
-    // Es OneToOne, poruqe lo mas probable es que si un animal vuelve a ser abandonado, no se sepa con certeza si es el mismo, asi que si
-    // esto vuelve a pasar se registra como un nuevo animal de acogida.
-    @OneToOne 
+    // Es ManyToOne, aunque un animal no tiene un historial de adopciones, poruqe si vuelve a ser abandonado es muy dificil saber si es el mismo
+    // la pongo manyToOne poruqe un animal, antes de cerrar un contrato de adopcion, podria recibir varias solicitudes de adopcion de varios usuarios
+    @ManyToOne  
     @JoinColumn (name = "pet_id", nullable = false)
     @NotNull  
     private Pet pet;

@@ -1,14 +1,16 @@
 package com.david.shelter.dto;
 
 import java.time.LocalDate;
+import com.david.shelter.model.enums.AgeGroup;
+import com.david.shelter.model.enums.Species;
 
-// Los enums los vamos a aplanar a String para simplificar la serializacion en las respuestas
+// Podemos dejar Enums en el DTO ya que la libreria Jackson hace el parseo de String al Enum correspondiente de forma automatica
 public record PetDTO(
     Long id,
     String name,
-    String species,
+    Species species,
     String breed,
-    String ageGroup,
+    AgeGroup ageGroup,
     String info,
     LocalDate registeredAt,
     Long fosterHomeId

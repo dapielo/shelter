@@ -17,15 +17,17 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity 
-@Table(name = "pets")
 @Getter 
 @Setter 
 @NoArgsConstructor 
+@AllArgsConstructor 
+@Table(name = "pets")
 public class Pet {
 
     @Id 

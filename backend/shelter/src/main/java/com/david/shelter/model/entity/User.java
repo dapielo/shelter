@@ -8,15 +8,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity 
-@Table(name = "users")
 @Setter 
 @Getter 
 @NoArgsConstructor 
+@AllArgsConstructor 
+@Table(name = "users")
 public class User {
 
     // Es obligatorio para la base de datos que la entidad tenga un id (clave primaria), usamos GeneratedValue para que se delege la asignacion al motor del SGBD

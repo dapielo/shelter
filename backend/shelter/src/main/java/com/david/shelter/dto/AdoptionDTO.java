@@ -2,12 +2,13 @@ package com.david.shelter.dto;
 
 import java.time.LocalDate;
 
-import org.springframework.cglib.core.Local;
+import com.david.shelter.model.enums.Status;
 
 public record AdoptionDTO(
-    String userEmail,
+    Long id,
     Long petId,
+    String petName,
     LocalDate initialDate,
     LocalDate endingDate,
-    String status
+    Status status
 ) { }

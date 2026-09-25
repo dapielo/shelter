@@ -1,8 +1,9 @@
 package com.david.shelter.dto;
 
-// Aplanamos el enum Province a String para facilitar la serializacion
+import com.david.shelter.model.enums.Province;
+
 public record FosterHomeDTO(
     Long id,
     Integer capacity,
-    String province    
+    Province province    
 ) { }
