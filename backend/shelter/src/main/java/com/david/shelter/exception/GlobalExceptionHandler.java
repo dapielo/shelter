@@ -23,4 +23,51 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<ExceptionBody>(body, HttpStatus.BAD_REQUEST);
     }
     
+    @ExceptionHandler (ResourceNotFoundException.class)
+    public ResponseEntity<ExceptionBody> handleInvalidemail(ResourceNotFoundException e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            400, 
+            e.getMessage(),
+            request.getDescription(false) 
+        );
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<ExceptionBody> handleUserException(UserException e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            400, 
+            e.getMessage(), 
+            request.getDescription(false)
+        );
+
+        return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler (PasswordNotMatchingException.class)
+    public ResponseEntity<ExceptionBody> handlePasswordNotMatching(PasswordNotMatchingException e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            400, 
+            e.getMessage(), 
+            request.getDescription(false)
+        );
+
+        return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler (FosterHomeException.class)
+    public ResponseEntity<ExceptionBody> handleFosterHomeException(PasswordNotMatchingException e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            400, 
+            e.getMessage(), 
+            request.getDescription(false)
+        );
+
+        return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
+    }
 }

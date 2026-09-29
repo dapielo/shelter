@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,6 +47,8 @@ public class FosterHome {
     @JoinColumn (name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany (mappedBy = "fosterHome" , cascade = CascadeType.ALL)
+    // NOTA: porque esta relacion es eager? Poruqe en la vista, SIEMPRE que voy a consultar las casas de acogida, quiero que me salgan las
+    // mascotas que estan en ellas, asi me evito hacer dos peticiones cuando sé que voy a querer siempre ambos datos
+    @OneToMany (mappedBy = "fosterHome" , cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Pet> pets;
 }
