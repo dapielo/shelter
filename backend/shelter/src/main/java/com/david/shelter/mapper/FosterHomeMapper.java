@@ -14,6 +14,7 @@ public class FosterHomeMapper {
         // dueños de la relacion asi que no necesito registarlos en la Entidad para guardarla/modificarla
         return new FosterHome(
             dto.id(), 
+            dto.name(),
             dto.capacity(), 
             dto.province(), 
             null,
@@ -23,6 +24,7 @@ public class FosterHomeMapper {
 
     public static FosterHomeDTO toDTO(FosterHome fosterHome) {
 
+        // Tenemos que hacer un mapeo previo del List de mascotas, para convertirlo en una lista de dtos, para luego añadirselo al FosterHome mapeado
         List<PetDTO> petsDTO = fosterHome.getPets()
             .stream()
             .map(PetMapper::toDTO)
@@ -30,6 +32,7 @@ public class FosterHomeMapper {
             
         return new FosterHomeDTO(
             fosterHome.getId(), 
+            fosterHome.getName(),
             fosterHome.getCapacity(), 
             fosterHome.getProvince(),
             petsDTO

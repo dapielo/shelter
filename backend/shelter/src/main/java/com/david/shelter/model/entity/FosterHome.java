@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,6 +33,9 @@ public class FosterHome {
     @Id 
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank 
+    String name;
 
     @NotNull 
     @Column (nullable = false)

@@ -40,6 +40,8 @@ public class User {
     @Column (nullable = false)
     private String password;
 
+    // Esta relacion es oneToMany, porque una persona puede registrar varios hogares de acogida en su usuario, puede ser que haga publicaciones 
+    // de animales que tiene de acogida un familiar por ejemplo, o que tenga tambien una finca en la que acoge animales a parte de si propia casa
     @OneToMany (mappedBy = "user", cascade = CascadeType.ALL) 
     // Como el atributo es un array de objetos FosterHome, JPA sabe que tiene que buscar el atributo "user" dentro de la clase FosterHome
     private List<FosterHome> fosterHomes;

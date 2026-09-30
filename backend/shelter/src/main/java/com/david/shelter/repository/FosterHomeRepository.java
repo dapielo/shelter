@@ -12,9 +12,10 @@ import java.util.List;
 @Repository 
 public interface FosterHomeRepository extends JpaRepository<FosterHome,Long> {
 
-    // HAY QUE CAMBIAR ESTA CONSULTA, HAY QUE USAR SPQL EN LUGAR DE SQL
-    - 
-    @Query ("select f from foster_homes f left join pets p on p.fosterHome_id = f.id")
+    // La consulta no esta con SQL, sino con JPQL que trabaja con clases en lugar de con tablas, esta consulta nos devuelve todas las casas de acogida
+    // asignadas al usuario que recibe el metodo por parametro, pero ademas rellena el atributo pets de cada uno de los objetos gracias al fetch que va con el left join
+    // no necesita que se le indique condicion de join, quda implicito al indicar el atributo (f.pets) ya que tenemos definida la relacion en las entidades
+    @Query ("select f from FosterHome f left join fetch f.pets where f.user = :user")
     public List<FosterHome> findByUserWithPets(User user);
 
 }

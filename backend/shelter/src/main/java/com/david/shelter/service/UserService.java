@@ -2,12 +2,10 @@ package com.david.shelter.service;
 
 import com.david.shelter.repository.AdoptionRepository;
 import java.util.Optional;
-
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.david.shelter.dto.PasswrodChangeDTO;
 import com.david.shelter.dto.UserDTO;
 import com.david.shelter.exception.PasswordNotMatchingException;
@@ -16,6 +14,7 @@ import com.david.shelter.exception.UserException;
 import com.david.shelter.mapper.UserMapper;
 import com.david.shelter.model.entity.User;
 import com.david.shelter.repository.UserRepository;
+import com.david.shelter.util.Validator;
 import lombok.RequiredArgsConstructor;
 
 @Service 
@@ -30,6 +29,19 @@ public class UserService {
     // CREATE
     @Transactional // Esta anotacion permite que este metodo se trate como una transaccion, si un paso falla, toda la operacion falla, se trata como una operacion atómica
     public UserDTO createUser(UserDTO dto) {
+
+        // Si el nombre de usuario tiene menos de 3 caracteres, o mas de 10, o no empieza por una letra, no es valido
+        if(dto.username().length() < 3 || dto.username().length() < 10 || !Character.isLetter(dto.username().charAt(0))) {
+            throw new UserException("El nombre de usuario ha de empezar por al menos una letra y tener entre 3 y 10 caracteres");
+        }
+
+        if (!Validator.isValidEmail(dto.email())) {
+            throw new UserException("El email no tiene un formato correcto");
+        }
+
+        if (dto.password().length() < 8 || dto.password().length() > 20) {
+            throw new UserException("La contrasñea tiene que tener entre 8 y 20 carateres");
+        }
 
         Optional<User> existent = userRepository.findByEmail(dto.email());
 
@@ -70,7 +82,12 @@ public class UserService {
         
         // Si no se lanzo una excepcion, el usuario existe
         user.setUsername(dto.username());
-        userRepository.save(user);
+        
+        try {
+            userRepository.save(user);
+        } catch (IllegalArgumentException e) {
+            throw new UserException("El nombre de usuario no se ha podido cambiar, no es válido");
+        }
     }
 
     // Este método es para cambiar la contraseña, recibe un dto con la contraseña vieja, y la nueva escrita dos veces, el usuario lo obtenemos del 
