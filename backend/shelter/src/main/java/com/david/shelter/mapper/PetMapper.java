@@ -17,7 +17,7 @@ public class PetMapper {
             dto.ageGroup(), 
             dto.info(), 
             dto.registeredAt(), 
-            null
+            fosterHome
         );
     }
 

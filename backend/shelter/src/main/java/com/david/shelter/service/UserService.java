@@ -1,7 +1,8 @@
 package com.david.shelter.service;
 
-import com.david.shelter.repository.AdoptionRepository;
 import java.util.Optional;
+
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import com.david.shelter.exception.ResourceNotFoundException;
 import com.david.shelter.exception.UserException;
 import com.david.shelter.mapper.UserMapper;
 import com.david.shelter.model.entity.User;
+import com.david.shelter.model.enums.Role;
 import com.david.shelter.repository.UserRepository;
 import com.david.shelter.util.Validator;
 import lombok.RequiredArgsConstructor;
@@ -34,30 +36,31 @@ public class UserService {
         if(dto.username().length() < 3 || dto.username().length() < 10 || !Character.isLetter(dto.username().charAt(0))) {
             throw new UserException("El nombre de usuario ha de empezar por al menos una letra y tener entre 3 y 10 caracteres");
         }
-
+        // Comprobamos que el email tenga un formato correcto
         if (!Validator.isValidEmail(dto.email())) {
             throw new UserException("El email no tiene un formato correcto");
         }
-
+        // Comprobamos que la contraseña tenga entre 8 y 20 caracteres
         if (dto.password().length() < 8 || dto.password().length() > 20) {
             throw new UserException("La contrasñea tiene que tener entre 8 y 20 carateres");
         }
 
         Optional<User> existent = userRepository.findByEmail(dto.email());
 
-        // Si ya ya hay un usuario con ese email, lanzamos una excepcion
+        // Comprobamos que no haya alguien registrado con ese mismo email
         if (existent.isPresent()) {
             throw new UserException("Ya existe un usuario con ese email");
         }
 
+        // NOTA: No se pueden crear usuarios admin, el unico usuario admin se inyecta directamente en la base de datos
         String encodedPassword = encoder.encode(dto.password());
-        User newUser = new User(null, dto.email(), dto.username(), encodedPassword, null);
+        User newUser = new User(null, dto.email(), dto.username(), encodedPassword, null,Role.ROLE_USER);
 
-        // Metemos en un bloque try-catch para capturar el IllegalArgumentException que puede lanzar el .save() y lanzar un error mas significativo
+        // Metemos en un bloque try-catch para capturar el IllegalArgumentException y OptimisticLockingFailureException que puede lanzar el .save() y lanzar un error mas significativo
         try {
             UserDTO saved = UserMapper.toDTO(userRepository.save(newUser));
             return saved;
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
             throw new UserException("Algun dato del usuario no es correcto");
         }
     }
@@ -99,11 +102,12 @@ public class UserService {
         User user = userRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado el usuario en la peticion de cambio de contraseña"));
 
+        // Comprobamos que la contraseña nueva y su verificacion coinciden
         if (!dto.newPassword().equalsIgnoreCase(dto.newPasswordAgain())){
-            throw new PasswordNotMatchingException("Las contraseñas nuevas no coinciden");
+            throw new PasswordNotMatchingException("Las contraseña nueva y replica no coinciden");
         }
-
-        if (encoder.matches(dto.oldPassword(), user.getPassword())) {
+        // Comrpobamos que le contraseña antigua es correcta
+        if (!encoder.matches(dto.oldPassword(), user.getPassword())) {
             throw new PasswordNotMatchingException("La contraseña antigua no es correcta");
         }
 

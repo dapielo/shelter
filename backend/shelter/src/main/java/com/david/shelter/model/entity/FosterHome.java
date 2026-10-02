@@ -46,6 +46,10 @@ public class FosterHome {
     @Enumerated (EnumType.STRING)
     private Province province;
 
+    // Nota: en spring las relaciones many to one son, por defecto, eager, esto quiere decir que siempre que se consulte en la base de datos
+    // en la tabla foster_homes, esta consulta tambien va a consultar los datos del user asociado en la tabla users, y el atributo user del objeto
+    // vendra relleno con usuario con el que esta asociado, si no fuese asi, este user vendria vacio, como pasa por defecto con las relaciones
+    // one to many que, por eficiencia, por defecto so lazy.
     @NotNull 
     @ManyToOne
     @JoinColumn (name = "user_id", nullable = false)

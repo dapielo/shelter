@@ -12,6 +12,13 @@ public class GlobalExceptionHandler {
 
     // Si Jackson encuentra un JSON mal formado (poruqe no se corresponde el texto de un campo con uno de los posibles valores de un Enum),
     // lanza esta excepcion, la capturamos aqui 
+
+    // WebRequest es un objeto que contiene informacion de la peticion, Spring lo inyecta relleno de informacion automaticamente, igual que con otras
+    // clases para las cuales tiene resolvedores, lo usamos para saber exactamnete en que endpoint se ha lanzado la excepcion.
+
+    // Excepto para este primer hanlder, que captura una excepcion que no lanzamos nosotros, sino que la lanza jackson si no puede parsear un JSON
+    // los mensajes de las respuestas nos vienen de las clases que las lanzan, de modo que lo unico que varia entre estos métodos es el código
+    // de estado que les ponemos, el mensaje de error nos viene en la exception que viene como parametro y la ruta el el objeto Webrequest
     @ExceptionHandler (HttpMessageNotReadableException.class)
     public ResponseEntity<ExceptionBody> handleMalformedJSON(HttpMessageNotReadableException e, WebRequest request) {
         
@@ -67,6 +74,18 @@ public class GlobalExceptionHandler {
             e.getMessage(), 
             request.getDescription(false)
         );
+
+        return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler (PetException.class) 
+    public ResponseEntity<ExceptionBody> handlePetException(PetException e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            400, 
+            e.getMessage(), 
+            request.getDescription(false)
+        );   
 
         return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
     }

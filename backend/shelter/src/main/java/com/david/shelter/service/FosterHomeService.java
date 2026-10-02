@@ -3,10 +3,10 @@ package com.david.shelter.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.david.shelter.dto.FosterHomeDTO;
 import com.david.shelter.exception.FosterHomeException;
 import com.david.shelter.exception.ResourceNotFoundException;
@@ -14,10 +14,8 @@ import com.david.shelter.mapper.FosterHomeMapper;
 import com.david.shelter.model.entity.FosterHome;
 import com.david.shelter.model.entity.Pet;
 import com.david.shelter.model.entity.User;
-import com.david.shelter.model.enums.Province;
 import com.david.shelter.repository.FosterHomeRepository;
 import com.david.shelter.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
 
 @Service 
@@ -54,7 +52,8 @@ public class FosterHomeService {
         try {
             FosterHome saved = fosterHomeRepository.save(fosterHome);
             return FosterHomeMapper.toDTO(saved);
-        } catch (IllegalArgumentException e) {
+        // capturamos los errores que puede lanzar el save
+        } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
             throw new FosterHomeException("No se ha podido registrar la casa de acogida, algún dato era incorrecto");
         }
     }
@@ -76,15 +75,17 @@ public class FosterHomeService {
     }
 
     // UPDATE
+    // Forzamos a que se envien los datos obligatorios en la peticion, otra forma de hacerlo podria ser que si el dto trae uno de los campos
+    // obligatorios vacío, se conserve el anterior, pero creo que es mejor indicar al front que tiene que enviar los datos obligatorios cubiertos siempre
     @Transactional 
     public void updateFosterHome(FosterHomeDTO dto){
         // Buscamos el usuario
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                        .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado al intentar actualizar la informacion de un hogar de acogida"));
+                        .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado al intentar actualizar la informacion de un hogar de acogida."));
 
         // Buscamos la casa de acogida
         FosterHome fosterHome = fosterHomeRepository.findById(dto.id())
-                                .orElseThrow(() -> new ResourceNotFoundException("Hogar de acogida no encontrado al intentar cambiar sus datos"));
+                                .orElseThrow(() -> new ResourceNotFoundException("Hogar de acogida no encontrado al intentar cambiar sus datos. ID: " + dto.id()));
 
         // Comprobamos que realmente se esta intentadno actualizar una casa de acogida del propio usuario (un usuario con conocimientos de Postman podria
         // hacer una peticion de actualizacion de una casa de acogida que no le pertenece cambiando el id en el JSON de la peticion)

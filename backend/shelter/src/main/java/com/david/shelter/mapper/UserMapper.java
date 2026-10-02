@@ -2,6 +2,7 @@ package com.david.shelter.mapper;
 
 import com.david.shelter.dto.UserDTO;
 import com.david.shelter.model.entity.User;
+import com.david.shelter.model.enums.Role;
 
 // no necesitamos instanciar los mappers para hacer la conversion, asi que vamos a hacer los metodos estaticos
 public class UserMapper {
@@ -12,7 +13,8 @@ public class UserMapper {
             dto.email(), 
             dto.username(),
             dto.password(),
-            null
+            null,
+            Role.ROLE_USER
         );
     }
 

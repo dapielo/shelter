@@ -1,13 +1,19 @@
 package com.david.shelter.model.entity;
 
 import java.util.List;
+
+import com.david.shelter.model.enums.Role;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,4 +51,8 @@ public class User {
     @OneToMany (mappedBy = "user", cascade = CascadeType.ALL) 
     // Como el atributo es un array de objetos FosterHome, JPA sabe que tiene que buscar el atributo "user" dentro de la clase FosterHome
     private List<FosterHome> fosterHomes;
+
+    @NotNull 
+    @Enumerated (EnumType.STRING)
+    Role role;
 }
