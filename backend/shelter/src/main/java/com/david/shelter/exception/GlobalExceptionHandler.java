@@ -89,4 +89,28 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler (LoginException.class) 
+    public ResponseEntity<ExceptionBody> handleLoginException(LoginException e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            400, 
+            e.getMessage(), 
+            request.getDescription(false)
+        );   
+
+        return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler (InvalidTokenException.class) 
+    public ResponseEntity<ExceptionBody> handleLoginException(InvalidTokenException e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            400, 
+            e.getMessage(), 
+            request.getDescription(false)
+        );   
+
+        return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
+    }
 }
