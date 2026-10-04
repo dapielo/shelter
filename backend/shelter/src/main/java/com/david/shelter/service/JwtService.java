@@ -3,6 +3,7 @@ package com.david.shelter.service;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import com.david.shelter.model.enums.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.david.shelter.dto.AuthenticationDTO;
@@ -34,13 +35,14 @@ public class JwtService {
         return Jwts.builder()
                 .subject(user)
                 .claim("role", role)
+                .issuedAt(Date.from(Instant.now()))
                 .expiration(Date.from(Instant.now().plus(Duration.ofHours(hours))))
                 .signWith(Keys.hmacShaKeyFor(CRYPTO_SEED.getBytes()))
                 .compact();
 
     }
 
-    // Sacar el email del usuario a partir del token (esto es necesareo para inyectarlo en el SecurityContextHolder)
+    // Sacar el email del usuario a partir del token lo vamos a necesitar en el filtro para inyectar el el SecurityContextHolder
     public String getUserFromToken(String token) {
 
         try {
@@ -55,14 +57,31 @@ public class JwtService {
         }
     }
 
+    // Extraemos el Rol del token, tambien es necesareo para el filtro
+    public Role getRoleFromToken(String token) {
+
+        try {
+            return Jwts.parser()
+                       .verifyWith(Keys.hmacShaKeyFor(CRYPTO_SEED.getBytes()))
+                       .build()
+                       .parseSignedClaims(token)
+                       .getPayload()
+                       // usamos el metodo de dos argumentos porque el de uno devuelve un Object, este permite indicar el objeto
+                       .get("role", Role.class);
+        } catch (Exception e) {
+            throw new InvalidTokenException("No se ha podido extraer el rol de usuario del token");
+        }
+    }
+
     // Verificar la validez de un token
-    public void verifyToken(String token) {
+    public boolean verifyToken(String token) {
 
         try {
             Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(CRYPTO_SEED.getBytes()))
                 .build()
                 .parseSignedClaims(token);
+            return true;
         } catch (Exception e) {
             throw new InvalidTokenException("El token no es valido");
         }
