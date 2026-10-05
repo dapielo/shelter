@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class FosterHomeService {
 
     private final FosterHomeRepository fosterHomeRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     // IMPLEMENTAMOS EL CRUD
 
@@ -43,7 +43,7 @@ public class FosterHomeService {
 
         FosterHome fosterHome = FosterHomeMapper.toEntity(dto);
         // Le asociamos el usuario
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow(() -> new ResourceNotFoundException("El usuario no se ha encontrado en la creacion de un hogar de acogida"));
+        User user = userService.getUserFromContext();
         fosterHome.setUser(user);
         // Inicializamos la lista de mascotas, aunque de momento este vacía, luego para añadir una mascota solo tenemos que acceder a ella sin 
         // comprobar antes si esta está vacía
@@ -59,13 +59,10 @@ public class FosterHomeService {
     }
 
     // READ
-    // El usuario lo sacamos del SecurityContextHolder, tnemos un metodo en el repositorio que busca todas las filas de la tabla foster_homes
-    // que tengan asociado un Usuario en concreto (el SGBD lo busca por el id del usuario)
     public List<FosterHomeDTO> findByUserWithPets() {
         
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                        .orElseThrow(() -> new ResourceNotFoundException("No existe un usuario resgitrado con ese email, al cargar el listado de casas de acogida"));
-        
+        User user = userService.getUserFromContext();
+
         // Devolvemos la lista de coincidencias, mapeandolas antes como DTOs para enviarlas al front
         return fosterHomeRepository.findByUserWithPets(user)
             .stream()
@@ -79,9 +76,9 @@ public class FosterHomeService {
     // obligatorios vacío, se conserve el anterior, pero creo que es mejor indicar al front que tiene que enviar los datos obligatorios cubiertos siempre
     @Transactional 
     public void updateFosterHome(FosterHomeDTO dto){
+
         // Buscamos el usuario
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                        .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado al intentar actualizar la informacion de un hogar de acogida."));
+        User user = userService.getUserFromContext();
 
         // Buscamos la casa de acogida
         FosterHome fosterHome = fosterHomeRepository.findById(dto.id())
@@ -89,7 +86,7 @@ public class FosterHomeService {
 
         // Comprobamos que realmente se esta intentadno actualizar una casa de acogida del propio usuario (un usuario con conocimientos de Postman podria
         // hacer una peticion de actualizacion de una casa de acogida que no le pertenece cambiando el id en el JSON de la peticion)
-        if (fosterHome.getUser().getId() != user.getId()) {
+        if (fosterHome.getUser().getId().longValue() != user.getId().longValue()) {
             throw new FosterHomeException("Se han intentado actualizar datos de un hogar de acogida que no le pertenece");
         }
 
@@ -121,11 +118,9 @@ public class FosterHomeService {
         FosterHome fosterHome = fosterHomeRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado la casa de acogida al intentar borrarla"));
         // Buscamos el usuario
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                    .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado al intentar borrar la casa de acogida"));
+        User user = userService.getUserFromContext();
         
-        
-        if (fosterHome.getUser().getId() != user.getId()) {
+        if (fosterHome.getUser().getId().longValue() != user.getId().longValue()) {
             throw new FosterHomeException("No se ha borrado la casa de acogida, no pertenece a este usuario");
         }
 

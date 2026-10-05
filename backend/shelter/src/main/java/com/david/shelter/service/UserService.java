@@ -1,5 +1,6 @@
 package com.david.shelter.service;
 
+import com.david.shelter.repository.AdoptionRepository;
 import java.util.Optional;
 
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -12,6 +13,7 @@ import com.david.shelter.dto.UserDTO;
 import com.david.shelter.exception.PasswordNotMatchingException;
 import com.david.shelter.exception.ResourceNotFoundException;
 import com.david.shelter.exception.UserException;
+import com.david.shelter.exception.UserFromTokenNotFoundEception;
 import com.david.shelter.mapper.UserMapper;
 import com.david.shelter.model.entity.User;
 import com.david.shelter.model.enums.Role;
@@ -23,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor 
 public class UserService {
     
+    private final AdoptionRepository adoptionRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
 
@@ -75,6 +78,13 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("No existe un usuario con ese email"));
     }
 
+    // Este método busca el usuario a partir del email almacenado en el SecurityContextHolder que usaremos en las peticiones que neesitan autenticacion
+    public User getUserFromContext() {
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserFromTokenNotFoundEception("No se ha encontrado el usuario que hizo la consutla en la base de datos."));
+    }
+
     // UPDATE
     // este metodo es para cambiar el nombre de usuario, no devuelve nada
     @Transactional 
@@ -103,7 +113,7 @@ public class UserService {
                     .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado el usuario en la peticion de cambio de contraseña"));
 
         // Comprobamos que la contraseña nueva y su verificacion coinciden
-        if (!dto.newPassword().equalsIgnoreCase(dto.newPasswordAgain())){
+        if (!dto.newPassword().equals(dto.newPasswordAgain())){
             throw new PasswordNotMatchingException("Las contraseña nueva y replica no coinciden");
         }
         // Comrpobamos que le contraseña antigua es correcta
@@ -121,9 +131,16 @@ public class UserService {
     @Transactional 
     public void deleteUser(String userEmail) {
         
-        // Si esta presente, lo borra, y si no esta presente, se lanza una excep
+        // Si esta presente, lo borra, y si no esta presente, se lanza una excepcion
         userRepository.findByEmail(userEmail).ifPresentOrElse(
-            (user) -> userRepository.deleteByEmail(userEmail), 
+            // NOTA: si se borra un usuario, se borran en cascada sus casas de acogida, que a su vez borra en cascada sus mascotas
+            // pero las adopciones no se borran en cascada al borrar al usuario, y por privacidad queremos que el borrado de una cuenta de usuario no deje rastro
+            (user) -> 
+                {
+                    adoptionRepository.deleteAll(adoptionRepository.findByAdopter(user));
+                    adoptionRepository.deleteAll(adoptionRepository.findByOwner(user));
+                    userRepository.deleteByEmail(userEmail);
+                }, 
             () -> new ResourceNotFoundException("No se ha borrado el usuario porque no existia un usuario con ese email"));
     }
 }

@@ -103,7 +103,43 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler (InvalidTokenException.class) 
-    public ResponseEntity<ExceptionBody> handleLoginException(InvalidTokenException e, WebRequest request) {
+    public ResponseEntity<ExceptionBody> handleInvalidToken(InvalidTokenException e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            400, 
+            e.getMessage(), 
+            request.getDescription(false)
+        );   
+
+        return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler (UserFromTokenNotFoundEception.class) 
+    public ResponseEntity<ExceptionBody> handleUserFromTokenNotFound(UserFromTokenNotFoundEception e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            500, 
+            e.getMessage(), 
+            request.getDescription(false)
+        );   
+
+        return new ResponseEntity<>(body,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler (AdptionAlreadyExistsException.class) 
+    public ResponseEntity<ExceptionBody> handleAdoptionAlreadyExists(AdptionAlreadyExistsException e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            400, 
+            e.getMessage(), 
+            request.getDescription(false)
+        );   
+
+        return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler (AdoptionException.class) 
+    public ResponseEntity<ExceptionBody> handleAdoptionException(AdoptionException e, WebRequest request) {
 
         ExceptionBody body = new ExceptionBody(
             400, 

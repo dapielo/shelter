@@ -22,7 +22,7 @@ public class PetService {
 
     private final PetRepository petRepository;
     private final FosterHomeRepository fosterHomeRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     // CREATE
     @Transactional 
@@ -42,15 +42,15 @@ public class PetService {
         } 
 
         // Buscamos al usuario que hace la peticion
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                    .orElseThrow(() -> new ResourceNotFoundException("Error al registrar la mascota, no se ha encontrado el usuario que hace la peticion"));
+        User user = userService.getUserFromContext();
+
         // Recordemos que al tener una relacion N:1 con User, el objeto fosterHome viene por defecto con el atributo user cargado con los datos del usuario
         FosterHome fosterHome = fosterHomeRepository.findById(dto.fosterHomeId())
                     .orElseThrow(() -> new ResourceNotFoundException("Error al registrar la mascota, no se ha encontrado una casa de acogida con ese ID"));
         
         // Si el id del usuario que hace la peticion, no coincide con el id del usuario relacionado con el fosterHome que nos indica el dto de la mascota
         // es que la peticion se esta haciendo para una casa de acogida que no pertenece a este usuario (peticion maliciosa). Lanzamos error
-        if (fosterHome.getUser().getId() != user.getId()) {
+        if (fosterHome.getUser().getId().longValue() != user.getId().longValue()) {
             throw new PetException("No se ha registrado la mascota, se esta intentando asignar a una casa de acogida que no le pertenece");
         }
 
@@ -93,20 +93,19 @@ public class PetService {
         Pet pet = petRepository.findById(dto.id())
                     .orElseThrow(() -> new ResourceNotFoundException("No se ha encontado la mascota con id: " + dto.id()));
 
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                        .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado el usuario al intentar actualizar la informacion de la mascota"));
+        User user = userService.getUserFromContext();
         
         // Nota: como pet esta relacionado N:1 con fosterhome y esta a su vez N:1 con user, la informacion de user me llega en el objeto pet en cascada
         // otra vez debido a que por defecto esrtas relaciones en Spring son EAGER.
         // Si el usuario que hace la peticion no coincide con el usuario con el que esta relacionado la mascota (a traves de la casa de aocgida), la peticion se cancela
-        if (user.getId() != pet.getFosterHome().getUser().getId()) {
+        if (user.getId().longValue() != pet.getFosterHome().getUser().getId().longValue()) {
             throw new PetException("No se ha podido modificar la informacion de la mascota, no pertenece a este usuario");
         }
 
         // Vamos a comporobar que el id de casa de acogida que nos envian del front se corresponde con una casa de acogida del usuario que hace la peticion
         FosterHome newFosterHome = fosterHomeRepository.findById(dto.fosterHomeId())
                                     .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado la casa de acogida nueva al actualizar la informacion de la mascota"));
-        if (newFosterHome.getUser().getId() != user.getId()) {
+        if (newFosterHome.getUser().getId().longValue() != user.getId().longValue()) {
             throw new PetException("No se ha podido actualizar la mascota, la casa de acogida en la que se intena registrar no pertenece a este usuario");
         }      
 
@@ -115,7 +114,7 @@ public class PetService {
         pet.setBreed(dto.breed());
         pet.setInfo(dto.info());
         pet.setAgeGroup(dto.ageGroup());
-        pet.setFosterHome(null);
+        pet.setFosterHome(newFosterHome);
 
         try {
             petRepository.save(pet);
@@ -128,14 +127,13 @@ public class PetService {
     @Transactional 
     public void deletePet(Long id) {
 
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                    .orElseThrow(() -> new ResourceNotFoundException("No se ha borrado la mascota porque no se encuentra el usuario en la base de datos"));
+        User user = userService.getUserFromContext();
 
         Pet pet = petRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("No se ha borrado la mascota porque no se encuentra una mascota con ese id en la base de datos"));
 
         // cancelamos la peticion si la mascota no pertenece al usuario que hace la peticion
-        if (pet.getFosterHome().getUser().getId() != user.getId()) {
+        if (pet.getFosterHome().getUser().getId().longValue() != user.getId().longValue()) {
             throw new PetException("No se ha eliminado la mascota porque no pertenece al usuario que esta haciendo la peticion");
         }
 

@@ -2,6 +2,8 @@ package com.david.shelter.model.entity;
 
 import java.time.LocalDate;
 import com.david.shelter.model.enums.Status;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

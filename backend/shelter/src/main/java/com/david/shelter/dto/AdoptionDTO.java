@@ -10,5 +10,9 @@ public record AdoptionDTO(
     String petName,
     LocalDate initialDate,
     LocalDate endingDate,
-    Status status
+    Status status,
+    // Este campo no existe en la Entidad, se va usar para las solicitudes aceptadas de adopcion, y se va a rellenar con la informacion de 
+    // un usuario u otro al momento de hacer la peticion, en caso de que la adopcion tenga marcada como status ACCEPTED
+    String ownerEmail,
+    String adopterEmail
 ) { }
