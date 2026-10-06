@@ -149,4 +149,28 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler (FileStorageException.class) 
+    public ResponseEntity<ExceptionBody> handleFileStorage(FileStorageException e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            500, 
+            e.getMessage(), 
+            request.getDescription(false)
+        );   
+
+        return new ResponseEntity<>(body,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler (UserNotAuthorizedException.class) 
+    public ResponseEntity<ExceptionBody> handleUserNotAuthorized(UserNotAuthorizedException e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            403, 
+            e.getMessage(), 
+            request.getDescription(false)
+        );   
+
+        return new ResponseEntity<>(body,HttpStatus.FORBIDDEN);
+    }
 }
