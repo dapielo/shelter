@@ -4,8 +4,11 @@ import java.time.LocalDate;
 
 import com.david.shelter.model.enums.Status;
 
+import jakarta.validation.constraints.NotNull;
+
 public record AdoptionDTO(
     Long id,
+    @NotNull 
     Long petId,
     String petName,
     LocalDate initialDate,

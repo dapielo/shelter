@@ -58,4 +58,6 @@ public class Pet {
     @JoinColumn (name = "fosterHome_id", nullable = false)
     @NotNull 
     private FosterHome fosterHome;
+
+    private String imagePath;
 }

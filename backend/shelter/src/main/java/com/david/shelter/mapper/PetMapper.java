@@ -1,5 +1,7 @@
 package com.david.shelter.mapper;
 
+import java.time.LocalDate;
+
 import com.david.shelter.dto.PetDTO;
 import com.david.shelter.model.entity.FosterHome;
 import com.david.shelter.model.entity.Pet;
@@ -16,8 +18,9 @@ public class PetMapper {
             dto.breed(), 
             dto.ageGroup(), 
             dto.info(), 
-            dto.registeredAt(), 
-            fosterHome
+            LocalDate.now(), 
+            fosterHome,
+            null
         );
     }
 
@@ -31,7 +34,8 @@ public class PetMapper {
             pet.getAgeGroup(), 
             pet.getInfo(), 
             pet.getRegisteredAt(), 
-            pet.getFosterHome().getId()
+            pet.getFosterHome().getId(),
+            pet.getImagePath()
         );
     }
 }

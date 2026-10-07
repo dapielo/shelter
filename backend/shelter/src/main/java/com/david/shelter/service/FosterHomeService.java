@@ -2,9 +2,7 @@ package com.david.shelter.service;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.david.shelter.dto.FosterHomeDTO;
@@ -15,7 +13,6 @@ import com.david.shelter.model.entity.FosterHome;
 import com.david.shelter.model.entity.Pet;
 import com.david.shelter.model.entity.User;
 import com.david.shelter.repository.FosterHomeRepository;
-import com.david.shelter.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service 
@@ -75,7 +72,7 @@ public class FosterHomeService {
     // Forzamos a que se envien los datos obligatorios en la peticion, otra forma de hacerlo podria ser que si el dto trae uno de los campos
     // obligatorios vacío, se conserve el anterior, pero creo que es mejor indicar al front que tiene que enviar los datos obligatorios cubiertos siempre
     @Transactional 
-    public void updateFosterHome(FosterHomeDTO dto){
+    public FosterHomeDTO updateFosterHome(FosterHomeDTO dto){
 
         // Buscamos el usuario
         User user = userService.getUserFromContext();
@@ -105,7 +102,7 @@ public class FosterHomeService {
         fosterHome.setProvince(dto.province());
   
         try {
-            fosterHomeRepository.save(fosterHome);
+            return FosterHomeMapper.toDTO(fosterHomeRepository.save(fosterHome));
         } catch (IllegalArgumentException e) {
             throw new FosterHomeException("Algún dato de la casa de acogida no es válido, no se ha podido cambiar");
         }

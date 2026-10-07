@@ -3,6 +3,7 @@ package com.david.shelter.config;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -46,7 +47,11 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // Aqui vamos añadiendo todos los endpoints que tenemos e indicamos sus permisos
-                .requestMatchers("/api/login/**").permitAll()
+                .requestMatchers("/shelter/login/**").permitAll()
+                .requestMatchers("/shelter/fosterhome/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/shelter/pet/**").permitAll() // Si es GET permitimos
+                .requestMatchers("/shelter/pet/").authenticated() // Si es cualquier otro verbo tiene que estar autenticado
+                .
                 .anyRequest().authenticated()
             );
 

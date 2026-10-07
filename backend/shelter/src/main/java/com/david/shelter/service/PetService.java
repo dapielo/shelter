@@ -1,9 +1,10 @@
 package com.david.shelter.service;
 
-import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.security.core.context.SecurityContextHolder;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import com.david.shelter.dto.PetDTO;
 import com.david.shelter.exception.PetException;
 import com.david.shelter.exception.ResourceNotFoundException;
@@ -11,9 +12,9 @@ import com.david.shelter.mapper.PetMapper;
 import com.david.shelter.model.entity.FosterHome;
 import com.david.shelter.model.entity.Pet;
 import com.david.shelter.model.entity.User;
+import com.david.shelter.model.enums.Province;
 import com.david.shelter.repository.FosterHomeRepository;
 import com.david.shelter.repository.PetRepository;
-import com.david.shelter.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service 
@@ -23,13 +24,14 @@ public class PetService {
     private final PetRepository petRepository;
     private final FosterHomeRepository fosterHomeRepository;
     private final UserService userService;
+    private final FileService fileService;
 
     // CREATE
     @Transactional 
-    public PetDTO createPet(PetDTO dto) {
+    public PetDTO createPet(PetDTO dto, MultipartFile image) {
 
         // Comprobamos que el nombre no venga vacío
-        if (dto.name().isBlank()) {
+        if (dto.name() == null || dto.name().isBlank()) {
             throw new PetException("No se ha podido registrar la mascota, el nombre es obligatorio");
         }
         // Comprobamos que la especie no venga en blanco
@@ -56,29 +58,43 @@ public class PetService {
 
         // Si llegamos hasta aqui, es que todos los datos son correctos, y podemos reguistrar la mascota, hemos diseñado el mapper de forma 
         // que nos pide el fosterHome (no tiene acceso a la capa de servicios ni de repositorios), asi tampoco nos podemos olvidar de asignalo antes de guardar
+        Pet pet = PetMapper.toEntity(dto, fosterHome);
+        String imagePath = fileService.storeImage(image);
+        pet.setImagePath(imagePath);
+
         try {
-            Pet pet = PetMapper.toEntity(dto, fosterHome);
-            return PetMapper.toDTO(petRepository.save(pet));
-        } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
+            return PetMapper.toDTO(petRepository.saveAndFlush(pet));
+        } catch (RuntimeException e) {
+            // Si hay algun error borramos la imagen para que no quede huerfana
+            fileService.deleteImage(imagePath);
             throw new PetException("Ha ocurrido un error al guardar la mascota en la base de datos");
         }
     }
 
     // READ
     // Cualquiera puede leer la informacion de las mascotas, porque la app permite buscar sin estar registrado.
-    public PetDTO readPet(Long id) {
+    public PetDTO getPetById(Long id) {
 
         return PetMapper.toDTO(petRepository.findById(id).orElseThrow(() -> new PetException("No existe ninguna mascota con ese id")));
+    }
+
+    // para obtener las mascotas en una provincia para los filtros de la aplicacion
+    public List<PetDTO> findByProvince(Province province) {
+        
+        return petRepository.findByFosterHomeProvince(province)
+                .stream()
+                .map(PetMapper::toDTO)
+                .toList();
     }
 
     // UPDATE 
     // igual que con el hogar de acogida, voy a lanzar excepcion si me vienen campos obligaotrios vacíos, creo que es mejor eso que mantener los campos
     // la informacion antigua si me viene vacía, porque en el front puede dar la sensacion de que esta fallando el back si envio un campo vacio que tendría que venir relleno
     @Transactional 
-    public void updatePet(PetDTO dto) {
+    public PetDTO updatePet(PetDTO dto, MultipartFile image) {
 
         // Comrpobamos primero que lso 3 campos obligatorios no vengan vacios.
-        if (dto.name().isBlank()) {
+        if (dto.name() == null || dto.name().isBlank()) {
             throw new PetException("Error al editar la mascota. El campo de nombre no puede venir vacío.");
         }
 
@@ -115,11 +131,55 @@ public class PetService {
         pet.setInfo(dto.info());
         pet.setAgeGroup(dto.ageGroup());
         pet.setFosterHome(newFosterHome);
+        
+        // Extraemos la antigua ruta de la imagen (OJO PUEDE SER NULL)
+        String oldImagePath = pet.getImagePath();
+        String newImagePath = null;
+
+        // Si recibimos un MultipartFile no nulo y no vacio, reemplazamos la imagen por la nueva, y cambiamos la ruta en la entidad
+        if (image != null && !image.isEmpty()) {
+            // Tenemos controlado el imagePath == null en los propios metodos del FileService, tanto en update como en delete, asi que no salta excepcion
+            newImagePath = fileService.storeImage(image);
+            pet.setImagePath(newImagePath);
+        }
 
         try {
-            petRepository.save(pet);
-        } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
+            
+            PetDTO updated = PetMapper.toDTO(petRepository.saveAndFlush(pet));
+
+            if (newImagePath != null) {
+                // Si se ha reemplazado borramos la vieja que ha quedado huerfana
+                fileService.deleteImage(oldImagePath);
+            }
+
+            return updated;
+
+        } catch (RuntimeException e) {
+            // Si hay un error borramos la imagen poruqe quedaria huerfana
+            fileService.deleteImage(newImagePath);
             throw new PetException("No se ha podido guardar la informacion actualizada de la mascota en la base de datos");
+        }
+    }
+
+    @Transactional 
+    public void deleteImage(Long id) {
+
+        Pet pet = petRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No hay una mascota con ese id"));
+        User user = userService.getUserFromContext();
+
+        if (pet.getFosterHome().getUser().getId().longValue() != user.getId().longValue()) {
+            throw new PetException("La mascota no pertenece a este usuario");
+        }
+
+        String imagePath = pet.getImagePath();
+        
+        // Tenemos que hacer flush para forzar la actualizacion en la BD y ver que no salte un error angtes de borrar la imagen
+        try{
+            pet.setImagePath(null);
+            petRepository.saveAndFlush(pet);
+            fileService.deleteImage(imagePath);
+        } catch (RuntimeException e) {
+            throw new PetException("No se ha podido eliminar la imagen de la mascota");
         }
     }
 
@@ -137,7 +197,16 @@ public class PetService {
             throw new PetException("No se ha eliminado la mascota porque no pertenece al usuario que esta haciendo la peticion");
         }
 
-        petRepository.delete(pet);
+        // Despues de borrar la mascota, borramos la imagen, al tener anotado el metodo como transactional, si falla la primera no se borra la segunda
+        // pero para ello tenemos uqe hacer un flush, que es lo que hace el cambio en la BD, el delete solo lo guarda en cache
+        String imagePath = pet.getImagePath();
+        try {
+            petRepository.delete(pet);
+            petRepository.flush();
+            fileService.deleteImage(imagePath);
+        } catch (RuntimeException e) {
+            throw new PetException("No se ha podido eliminar la mascota");
+        }
     }
 
 }

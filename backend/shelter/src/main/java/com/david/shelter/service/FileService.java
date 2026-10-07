@@ -11,6 +11,8 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.david.shelter.exception.FileStorageException;
+import com.david.shelter.exception.InvalidImageNameException;
+import com.david.shelter.exception.ResourceNotFoundException;
 import com.david.shelter.util.Validator;
 
 
@@ -35,6 +37,7 @@ public class FileService {
     }
 
     // CREATE
+    // almacena una imagen, dentro de una carpeta asignada a cada usuario a partir de su id
     public String storeImage(MultipartFile file) {        
         
         // Si se sube una imagen, extraemos su extension, le ponemos un nombre unico para uqe no haya conflico
@@ -42,7 +45,7 @@ public class FileService {
             
             // Comprobamos que tenga un nombre valido
             if (!Validator.isValidImage(file)){
-                throw new FileStorageException("Ela archivo no tiene un nombre válido");
+                throw new InvalidImageNameException("El archivo no tiene un nombre válido");
             }
 
             // Si no existe creamos una carpeta para el usuario dentro de nuestra carpeta uploads
@@ -56,7 +59,7 @@ public class FileService {
             }
 
             // Obtenemos la extension, cambiamos el nombre por uno unico, y creamos la ruta con el nuevo nombre para copiar los datos de la imagen
-            String name = file.getOriginalFilename();
+            String name = file.getOriginalFilename().toLowerCase();
             String extension = name.substring(name.lastIndexOf("."));
 
             String uniqueName = UUID.randomUUID().toString();
@@ -77,17 +80,34 @@ public class FileService {
     }
 
     // READ
+    // a Partir de una ruta, busca una imagen y se la devuelve al navegador
     public Resource getImage(String imagePath) {
         
-        // Continuar
+        // Primero comprobamos que la ruta no venga vacía
         if (imagePath == null || imagePath.isBlank()) {
-            throw... 
+            throw new ResourceNotFoundException("La ruta de la imagen no es correcta");
         }
 
         Path path = Path.of(imagePath);
 
+        Path absolutePath = path.toAbsolutePath().normalize();
+        Path root = this.uploadsDir.toAbsolutePath().normalize();
+
+        // Si la ruta no esta dentro de las rutas permitidas (dentro de nuestra carpeta de uploads o siendo la propia carpeta de uploads) lanzamos error
+        if (!absolutePath.startsWith(root) || absolutePath.equals(root)) {
+            throw new FileStorageException("Ruta de la imagen no válida");
+        }
+
         try{
-            Resource image = new UrlResource(path.toUri());
+            // Ahroa creamos el objeto Resource a partir de la ruta, pero antes de devolver la imagen comprobamos 
+            // que exista, aunque la URL este bien escrita, puede no haber una imagen en esa URL
+            Resource image = new UrlResource(absolutePath.toUri());
+
+            if (!image.isReadable()) {
+                throw new ResourceNotFoundException("No hay ninguna imagen en esa ruta");
+            }
+
+            // Si todo esta bien, devolvemos la imagen
             return image;
         } catch (IOException e) {
             throw new FileStorageException("No se ha podido cargar la imagen");
@@ -96,6 +116,7 @@ public class FileService {
     }
 
     // UPDATE
+    // Para subir una nueva imagen si la queremos reemplazar
     public String updateImage(String imagePath, MultipartFile file) {
 
         // Si no se sube imagen o está vacía no hacemos nada
@@ -110,6 +131,7 @@ public class FileService {
     }
 
     // DELETE
+    // Para borrar una imagen cuando se borra su recurso asociado.
     public void deleteImage(String imagePath){
 
         // Si esta vacio no hacemos nada

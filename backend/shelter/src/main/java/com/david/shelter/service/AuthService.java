@@ -11,7 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.david.shelter.dto.AuthenticationDTO;
-import com.david.shelter.dto.LoginDTO;
+import com.david.shelter.dto.LoginRequestDTO;
+import com.david.shelter.dto.LoginResponseDTO;
 import com.david.shelter.exception.LoginException;
 import com.david.shelter.exception.ResourceNotFoundException;
 import com.david.shelter.model.entity.User;
@@ -31,7 +32,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public String login(LoginDTO login) {
+    public LoginResponseDTO login(LoginRequestDTO login) {
 
         // Buscamos el usuario, si el email es incorrecto lanzamos excepcion
         User user = userRepository.findByEmail(login.email()).orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado un usuario con ese email en el intento de inicio de sesion"));
@@ -50,6 +51,6 @@ public class AuthService {
 
         // le pasamos el objeto auth para que cree el token con el, y lo devolvemos 
         String token = jwtService.generateToken(auth);
-        return token;
+        return new LoginResponseDTO(user.getId(), token);
     }
 }

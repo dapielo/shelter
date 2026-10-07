@@ -49,7 +49,12 @@ public class AdoptionService {
             null, 
             Status.PENDING);   
 
-        return AdoptionMapper.toDTO(newAdoption);
+        try {
+            adoptionRepository.save(newAdoption);
+            return AdoptionMapper.toDTO(newAdoption);
+        } catch (AdoptionException e) {
+            throw new AdoptionException("No se ha podido iniciar la adopcion");
+        }
     }
 
     // READ (tres casos, el usuario quiere adoptar, el usuario es el que la tiene e historial de adopciones cerradas)
@@ -132,9 +137,10 @@ public class AdoptionService {
     // DELETE
     // Por si una persona que hace una peticion para adoptar se arrepiente, o la hace por error, antes de que esta se cierre por la otra parte
     @Transactional 
-    public void deleteAdoptionPetition(Pet pet) {
+    public void deleteAdoptionPetition(Long id) {
 
         User user = userService.getUserFromContext();
+        Pet pet = petRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado la mascota con ese id al intentar borrar la peticion de adopcion"));
         Optional<Adoption> adoption = adoptionRepository.findByPetAndAdopter(pet, user);
 
         // Si exsite, la borramos, si no existe no hacemos nada

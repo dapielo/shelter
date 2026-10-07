@@ -2,7 +2,6 @@ package com.david.shelter.mapper;
 
 import com.david.shelter.dto.AdoptionDTO;
 import com.david.shelter.model.entity.Adoption;
-import com.david.shelter.model.entity.User;
 import com.david.shelter.model.enums.Status;
 
 // Este mapper solo tiene conversion a DTO, porque cuando se inicia o modifica una adopcion, el usuario lo puedo extraer del SecurityContextHolder,
