@@ -48,10 +48,13 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Aqui vamos añadiendo todos los endpoints que tenemos e indicamos sus permisos
                 .requestMatchers("/shelter/login/**").permitAll()
+                .requestMatchers("/shelter/register/**").permitAll()
                 .requestMatchers("/shelter/fosterhome/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/shelter/pet/**").permitAll() // Si es GET permitimos
-                .requestMatchers("/shelter/pet/").authenticated() // Si es cualquier otro verbo tiene que estar autenticado
-                .
+                .requestMatchers("/shelter/pet/**").authenticated() // Si es cualquier otro verbo tiene que estar autenticado
+                .requestMatchers("/shelter/fosterhome/**").authenticated()
+                .requestMatchers("/shelter/adoption/**").authenticated()
+                .requestMatchers("/shelter/user/**").authenticated()
                 .anyRequest().authenticated()
             );
 

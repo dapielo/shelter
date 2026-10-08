@@ -185,4 +185,16 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler (InvalidEmailException.class) 
+    public ResponseEntity<ExceptionBody> handleInvalidEmail (InvalidEmailException e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            400, 
+            e.getMessage(), 
+            request.getDescription(false)
+        );   
+
+        return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
+    }
 }

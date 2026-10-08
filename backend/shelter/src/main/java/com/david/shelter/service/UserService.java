@@ -1,6 +1,9 @@
 package com.david.shelter.service;
 
+import com.david.shelter.controller.AdoptionController;
 import com.david.shelter.repository.AdoptionRepository;
+
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -8,12 +11,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.david.shelter.dto.PasswrodChangeDTO;
+
+import com.david.shelter.dto.AuthenticationDTO;
+import com.david.shelter.dto.EmailChangeDTO;
+import com.david.shelter.dto.LoginRequestDTO;
+import com.david.shelter.dto.LoginResponseDTO;
+import com.david.shelter.dto.PasswordChangeDTO;
 import com.david.shelter.dto.UserDTO;
+import com.david.shelter.exception.InvalidEmailException;
 import com.david.shelter.exception.PasswordNotMatchingException;
 import com.david.shelter.exception.ResourceNotFoundException;
 import com.david.shelter.exception.UserException;
 import com.david.shelter.exception.UserFromTokenNotFoundEception;
+import com.david.shelter.exception.UserNotAuthorizedException;
 import com.david.shelter.mapper.UserMapper;
 import com.david.shelter.model.entity.User;
 import com.david.shelter.model.enums.Role;
@@ -28,6 +38,7 @@ public class UserService {
     private final AdoptionRepository adoptionRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
+    private final JwtService jwtService;
 
     // IMPLEMENTAMOS EL CRUD
 
@@ -36,7 +47,7 @@ public class UserService {
     public UserDTO createUser(UserDTO dto) {
 
         // Si el nombre de usuario tiene menos de 3 caracteres, o mas de 10, o no empieza por una letra, no es valido
-        if(dto.username().length() < 3 || dto.username().length() < 10 || !Character.isLetter(dto.username().charAt(0))) {
+        if(dto.username().length() < 3 || dto.username().length() > 10 || !Character.isLetter(dto.username().charAt(0))) {
             throw new UserException("El nombre de usuario ha de empezar por al menos una letra y tener entre 3 y 10 caracteres");
         }
         // Comprobamos que el email tenga un formato correcto
@@ -85,13 +96,18 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(() -> new UserFromTokenNotFoundEception("No se ha encontrado el usuario que hizo la consutla en la base de datos."));
     }
 
+    // Obtenemos una lista de usuarios, esto solo lo va a poder usar el administrador
+    public List<UserDTO> getUsers() {
+
+        return userRepository.findAll().stream().map(UserMapper::toDTO).toList();
+    }
+
     // UPDATE
     // este metodo es para cambiar el nombre de usuario, no devuelve nada
     @Transactional 
     public void updateUsername(UserDTO dto){
 
-        User user = userRepository.findByEmail(dto.email())
-                        .orElseThrow(() -> new ResourceNotFoundException("No Hay ningun usuario registrado con ese email"));
+        User user = getUserFromContext();
         
         // Si no se lanzo una excepcion, el usuario existe
         user.setUsername(dto.username());
@@ -106,7 +122,7 @@ public class UserService {
     // Este método es para cambiar la contraseña, recibe un dto con la contraseña vieja, y la nueva escrita dos veces, el usuario lo obtenemos del 
     // SecurityContextHolder, y el metodo no devuelve nada
     @Transactional 
-    public void updatePassword(PasswrodChangeDTO dto) {
+    public void updatePassword(PasswordChangeDTO dto) {
         
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(userEmail)
@@ -126,21 +142,62 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional 
+    // Devuelve un LoginResponse, poruqe al cambiar el email generamos un nuevo token
+    public LoginResponseDTO updateEmail(EmailChangeDTO dto) {
+
+        User user = getUserFromContext();
+
+        String newEmail = dto.email();
+
+        // Comrpobamos que el email tenga un formato valido
+        if (!Validator.isValidEmail(newEmail)) {
+            throw new UserException("El formato del email no es valido");
+        }
+        
+        // Comprobamos que la contraseña este bien, nos tiene que enviar contraseña para cambiar el email
+        if (!encoder.matches(dto.password(), user.getPassword())) {
+            throw new UserException("La contraseña no es correcta");
+        }
+
+        // Comprobamos que el email no este ya en la base de datos, porque tiene que ser único.
+        if (userRepository.findByEmail(newEmail).isPresent()) {
+            throw new InvalidEmailException("Ya existe un usuario con ese email");
+        }
+
+        // Si todo esta bien, procedemos a cambiar el email, generamos un nuevo token (el anterior dejara de ser valido) y lo devolvemos
+        user.setEmail(newEmail);
+        try {
+            userRepository.saveAndFlush(user);
+            String token = jwtService.generateToken(new AuthenticationDTO(newEmail, user.getRole()));
+            return new LoginResponseDTO(user.getId(), token);
+        } catch (RuntimeException e) {
+            throw new UserException("No se ha podido cambiar el email del Usuario");
+        }
+    }
+
     // DETELE 
     // Al no ser una aplicacion comercial, si un usuario desea eliminar sus usuario, se respeta su privacidad y se eliminan todos los datos asociados
     @Transactional 
     public void deleteUser(String userEmail) {
-        
-        // Si esta presente, lo borra, y si no esta presente, se lanza una excepcion
-        userRepository.findByEmail(userEmail).ifPresentOrElse(
-            // NOTA: si se borra un usuario, se borran en cascada sus casas de acogida, que a su vez borra en cascada sus mascotas
-            // pero las adopciones no se borran en cascada al borrar al usuario, y por privacidad queremos que el borrado de una cuenta de usuario no deje rastro
-            (user) -> 
-                {
-                    adoptionRepository.deleteAll(adoptionRepository.findByAdopter(user));
-                    adoptionRepository.deleteAll(adoptionRepository.findByOwner(user));
-                    userRepository.deleteByEmail(userEmail);
-                }, 
-            () -> new ResourceNotFoundException("No se ha borrado el usuario porque no existia un usuario con ese email"));
+
+        User user = getUserFromContext();
+
+        if (user.getRole() == Role.ROLE_ADMIN) {
+            throw new UserNotAuthorizedException("No se puede eliminar este usuario");
+        }
+
+        // Si el usuario no es administrador y su email no es el email del usuario que se pretende borrar, lanzamos excepcion
+        if (user.getRole()!=Role.ROLE_ADMIN && !user.getEmail().equals(userEmail)) {
+            throw new UserNotAuthorizedException("No puedes borrrar a ese usuario");
+        }
+
+        User userToDelete = userRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new ResourceNotFoundException("No hay un usuario con ese email"));
+
+        // Borramos la informacion de adopciones asociada al usuario
+        adoptionRepository.deleteAll(adoptionRepository.findByAdopter(userToDelete));
+        adoptionRepository.deleteAll(adoptionRepository.findByOwner(userToDelete));
+        userRepository.delete(userToDelete);
     }
 }

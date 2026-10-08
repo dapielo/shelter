@@ -6,6 +6,7 @@ import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,6 +62,8 @@ public class PetController {
     }
 
     // UPDATE
+    // para borrar la imagen, es una actualizacion de la mascota
+    @PreAuthorize ("isAuthenticated()")
     @PutMapping ("/image/delete/{id}")
     public ResponseEntity<Void> deleteImage(@PathVariable Long id) {
 
@@ -68,6 +71,8 @@ public class PetController {
         return ResponseEntity.ok().build(); // Esta es una forma alternativa de generar ResponseEntity con codigo Http OK (200)
     }
 
+    // Para modificar los datos de la mascota
+    @PreAuthorize ("isAuthenticated()")
     @PutMapping ("update")
     public ResponseEntity<PetDTO> update(@ModelAttribute PetDTO dto, @RequestPart("image") MultipartFile image) {
 
@@ -76,5 +81,11 @@ public class PetController {
     }
 
     // DELETE
-    implementar
+    @PreAuthorize ("isAuthenticated()")
+    @DeleteMapping ("/delete/{id}")
+    public ResponseEntity<Void> deletePet(@PathVariable Long id) {
+
+        petService.deletePet(id);
+        return ResponseEntity.ok().build();
+    }
 }

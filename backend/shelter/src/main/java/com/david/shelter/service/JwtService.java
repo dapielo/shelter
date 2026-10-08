@@ -83,7 +83,7 @@ public class JwtService {
                 .parseSignedClaims(token);
             return true;
         } catch (Exception e) {
-            throw new InvalidTokenException("El token no es valido");
+            return false;
         }
     }
 }

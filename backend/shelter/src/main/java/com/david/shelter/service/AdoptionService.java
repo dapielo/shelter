@@ -102,7 +102,7 @@ public class AdoptionService {
     // UPDATE 
     // Metodo para que un usuario acepte una peticion de adopcion de una mascota a la que tiene de acogida
     @Transactional 
-    public void acceptAdoptionPetition(Long adoptionId) {
+    public String acceptAdoptionPetition(Long adoptionId) {
 
         User user = userService.getUserFromContext();
         Adoption adoption = adoptionRepository.findById(adoptionId).orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado un proceso de adopcion con id: " + adoptionId));
@@ -115,6 +115,7 @@ public class AdoptionService {
         adoption.setStatus(Status.ACCEPTED);
         adoption.setEndingDate(LocalDate.now());
         adoptionRepository.save(adoption);
+        return user.getEmail();
     }
 
     // Igual que el anterior pero para rechazar la peticion, asi no hay que enviar datos (van a ser dos endpoints)
@@ -143,8 +144,8 @@ public class AdoptionService {
         Pet pet = petRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado la mascota con ese id al intentar borrar la peticion de adopcion"));
         Optional<Adoption> adoption = adoptionRepository.findByPetAndAdopter(pet, user);
 
-        // Si exsite, la borramos, si no existe no hacemos nada
-        if (adoption.isPresent()) {
+        // Si exsite y no ha sido respondida por la otra parte, la borramos, si no, no hacemos nada
+        if (adoption.isPresent() && adoption.get().getStatus() == Status.PENDING) {
             adoptionRepository.delete(adoption.get());
         }
     }

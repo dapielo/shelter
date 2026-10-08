@@ -9,6 +9,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -30,6 +32,7 @@ public class User {
     // Es obligatorio para la base de datos que la entidad tenga un id (clave primaria), usamos GeneratedValue para que se delege la asignacion al motor del SGBD
     // GenerationType.IDENTITY hace que se use el auto_icrement en la base de datos para las claves primarias
     @Id 
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
     // El email tiene que ser unique, poruqe es lo que vamos a usar para generar el token de autenticacion, aunque por rendimiento el id siga siendo un Long
