@@ -17,10 +17,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import lombok.RequiredArgsConstructor;
 
-@Configuration // Esto sirve para convertirlo en un Bean y para buscar tambien Beans dentro de esta clase, para poder gestionar Spring el ciclo de vida de estos objetos
+@Configuration // Esto sirve para convertirlo en un Bean y convertirlo tambien en fabrica de Beans
 @EnableWebSecurity // Esto para habilitar esta configuracion a nivel de peticiones HTTP
 @EnableMethodSecurity // Esto para habilitarla a nivel de metodos en los controladores
 @RequiredArgsConstructor 
