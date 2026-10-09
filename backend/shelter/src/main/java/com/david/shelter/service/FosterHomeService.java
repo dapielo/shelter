@@ -9,18 +9,25 @@ import com.david.shelter.dto.FosterHomeDTO;
 import com.david.shelter.exception.FosterHomeException;
 import com.david.shelter.exception.ResourceNotFoundException;
 import com.david.shelter.mapper.FosterHomeMapper;
+import com.david.shelter.model.entity.Adoption;
 import com.david.shelter.model.entity.FosterHome;
 import com.david.shelter.model.entity.Pet;
 import com.david.shelter.model.entity.User;
+import com.david.shelter.repository.AdoptionRepository;
 import com.david.shelter.repository.FosterHomeRepository;
+import com.david.shelter.repository.PetRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service 
 @RequiredArgsConstructor 
 public class FosterHomeService {
 
+    private final FileService fileService;
     private final FosterHomeRepository fosterHomeRepository;
     private final UserService userService;
+    private final AdoptionRepository adoptionRepository;
+    private final PetRepository petRepository;
 
     // IMPLEMENTAMOS EL CRUD
 
@@ -39,6 +46,8 @@ public class FosterHomeService {
         }
 
         FosterHome fosterHome = FosterHomeMapper.toEntity(dto);
+        // ponemos el id a null, por si venia algo en el, si nos lo envian un con un valor que existe en la BD se sobreescribiria esa casa de acogida con los datos de esta
+        fosterHome.setId(null);
         // Le asociamos el usuario
         User user = userService.getUserFromContext();
         fosterHome.setUser(user);
@@ -74,12 +83,16 @@ public class FosterHomeService {
     @Transactional 
     public FosterHomeDTO updateFosterHome(FosterHomeDTO dto){
 
+        if (dto.id() == null) {
+            throw new ResourceNotFoundException("Hay que indicar el id de la casa de acogida que se quiere actualizar");
+        }
+
         // Buscamos el usuario
         User user = userService.getUserFromContext();
 
         // Buscamos la casa de acogida
         FosterHome fosterHome = fosterHomeRepository.findById(dto.id())
-                                .orElseThrow(() -> new ResourceNotFoundException("Hogar de acogida no encontrado al intentar cambiar sus datos. ID: " + dto.id()));
+                                .orElseThrow(() -> new FosterHomeException("Hogar de acogida no encontrado al intentar cambiar sus datos. ID: " + dto.id()));
 
         // Comprobamos que realmente se esta intentadno actualizar una casa de acogida del propio usuario (un usuario con conocimientos de Postman podria
         // hacer una peticion de actualizacion de una casa de acogida que no le pertenece cambiando el id en el JSON de la peticion)
@@ -121,7 +134,25 @@ public class FosterHomeService {
             throw new FosterHomeException("No se ha borrado la casa de acogida, no pertenece a este usuario");
         }
 
+        // Buscamos las adopciones asociadas a mascotas de esta casa de acogida
+        List<Adoption> adoptionsByOwner = adoptionRepository.findByOwner(user);
+        List<Adoption> adoptionsInThisFoseterHome = adoptionsByOwner.stream()
+                                                        .filter(adoption -> adoption.getPet().getFosterHome().getId().longValue() == fosterHome.getId().longValue())
+                                                        .toList();
+        
+        // Buscamos las mascotas asociadas a esta casa de acogida para borrar sus imagenes del FileService
+        List<Pet> petsInThisFosterHome = petRepository.findByFosterHome(fosterHome);
+
+        // Ahora borramos las adopciones asociadas porque tienen clave foranea de las mascotas que hay en la casa de acogida
+        adoptionRepository.deleteAll(adoptionsInThisFoseterHome);
+        // Ahora borramos la casa de acogida (por si el borrado falla)
         fosterHomeRepository.delete(fosterHome);
+        // Forzamos la actualizacion de la base de datos para ver si hay errores, sino perderiamos las imagenes sin que se borrase nada
+        fosterHomeRepository.flush();
+        // por ultimo borramos las imagenes de las mascotas que habia en ella
+        petsInThisFosterHome.stream()
+                            .forEach(pet -> {fileService.deleteImage(pet.getImagePath());});
+
     }
 
 }

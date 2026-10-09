@@ -23,7 +23,7 @@ public class AdoptionController {
 
     // CREATE 
     @PreAuthorize ("isAuthenticated()")
-    @PutMapping ("/initiate/{id}")
+    @PutMapping ("/initiate/{petId}")
     public ResponseEntity<AdoptionDTO> initiateAdoption(@PathVariable Long petId) {
 
         AdoptionDTO body = adoptionService.initiateAdoption(petId);
@@ -69,7 +69,7 @@ public class AdoptionController {
     }
 
     // rechazar una solicitud de adopcion
-    @PreAuthorize ("isAuthenticated")
+    @PreAuthorize ("isAuthenticated()")
     @PutMapping ("/decline/{adoptionId}")
     public ResponseEntity<Void> declineAtoptionPetition(@PathVariable Long adoptionId) {
 
@@ -80,10 +80,10 @@ public class AdoptionController {
     // DELETE
     // Esto solo se usa para borrar una adopcion que se ha iniciado pero aun no ha sido aceptada o rechazada por la otra parte (sobretodo para cuando se hace click por error)
     @PreAuthorize ("isAuthenticated()")
-    @DeleteMapping ("/delete/{adoptionId}")
-    public ResponseEntity<Void> deleteAdoption(@PathVariable Long adoptionId) {
+    @DeleteMapping ("/delete/{petId}")
+    public ResponseEntity<Void> deleteAdoption(@PathVariable Long petId) {
 
-        adoptionService.deleteAdoptionPetition(adoptionId);
+        adoptionService.deleteAdoptionPetition(petId);
         return ResponseEntity.ok().build();
     }
 }

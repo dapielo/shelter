@@ -10,15 +10,15 @@ import jakarta.validation.constraints.NotNull;
 // Podemos dejar Enums en el DTO ya que la libreria Jackson hace el parseo de String al Enum correspondiente de forma automatica
 public record PetDTO(
     Long id,
-    @NotBlank 
+    @NotBlank (message = "El nombre de la mascota no puede estar vacío")
     String name,
-    @NotNull 
+    @NotNull (message = "Hay que indicar una especie")
     Species species,
     String breed,
     AgeGroup ageGroup,
     String info,
     LocalDate registeredAt,
-    @NotNull 
+    @NotNull (message = "tiene que tener una casa de acogida asociada")
     Long fosterHomeId,
     String imagePath
 ) { }

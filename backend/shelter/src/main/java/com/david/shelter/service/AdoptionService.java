@@ -138,10 +138,11 @@ public class AdoptionService {
     // DELETE
     // Por si una persona que hace una peticion para adoptar se arrepiente, o la hace por error, antes de que esta se cierre por la otra parte
     @Transactional 
-    public void deleteAdoptionPetition(Long id) {
+    public void deleteAdoptionPetition(Long petId) {
 
         User user = userService.getUserFromContext();
-        Pet pet = petRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado la mascota con ese id al intentar borrar la peticion de adopcion"));
+
+        Pet pet = petRepository.findById(petId).orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado la mascota con ese id al intentar borrar la peticion de adopcion"));
         Optional<Adoption> adoption = adoptionRepository.findByPetAndAdopter(pet, user);
 
         // Si exsite y no ha sido respondida por la otra parte, la borramos, si no, no hacemos nada

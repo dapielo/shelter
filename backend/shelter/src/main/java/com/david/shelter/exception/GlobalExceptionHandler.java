@@ -3,6 +3,7 @@ package com.david.shelter.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -192,6 +193,19 @@ public class GlobalExceptionHandler {
         ExceptionBody body = new ExceptionBody(
             400, 
             e.getMessage(), 
+            request.getDescription(false)
+        );   
+
+        return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
+    }
+
+    // Esta excepcion salta en un controlador tiene un argumento marcado con @Valid, y el DTO no cumple la validacion con la que esta anotado
+    @ExceptionHandler (MethodArgumentNotValidException.class) 
+    public ResponseEntity<ExceptionBody> handleMethodArgumentNotValid (MethodArgumentNotValidException e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            400, 
+            "Los datos enviados no eran correctos", 
             request.getDescription(false)
         );   
 

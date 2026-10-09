@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record AdoptionDTO(
     Long id,
-    @NotNull 
+    @NotNull
     Long petId,
     String petName,
     LocalDate initialDate,

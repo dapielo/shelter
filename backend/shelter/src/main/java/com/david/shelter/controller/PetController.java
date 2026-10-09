@@ -1,8 +1,6 @@
 package com.david.shelter.controller;
 
 import java.util.List;
-
-import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,7 +52,7 @@ public class PetController {
 
     // Para obtener informacion de uno por id
     @GetMapping ("/id/{id}")
-    public ResponseEntity<PetDTO> getPetById(@PathVariable  Long id) {
+    public ResponseEntity<PetDTO> getPetById(@PathVariable Long id) {
 
         PetDTO body = petService.getPetById(id);
         return new ResponseEntity<>(body,HttpStatus.OK);
@@ -74,7 +71,7 @@ public class PetController {
     // Para modificar los datos de la mascota
     @PreAuthorize ("isAuthenticated()")
     @PutMapping ("update")
-    public ResponseEntity<PetDTO> update(@ModelAttribute PetDTO dto, @RequestPart("image") MultipartFile image) {
+    public ResponseEntity<PetDTO> update(@Valid @ModelAttribute PetDTO dto, @RequestPart(name = "image", required = false) MultipartFile image) {
 
         PetDTO body = petService.updatePet(dto, image);
         return ResponseEntity.ok(body);

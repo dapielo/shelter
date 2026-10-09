@@ -1,20 +1,16 @@
 package com.david.shelter.service;
 
-import com.david.shelter.controller.AdoptionController;
+import com.david.shelter.controller.UserController;
 import com.david.shelter.repository.AdoptionRepository;
-
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.david.shelter.dto.AuthenticationDTO;
 import com.david.shelter.dto.EmailChangeDTO;
-import com.david.shelter.dto.LoginRequestDTO;
 import com.david.shelter.dto.LoginResponseDTO;
 import com.david.shelter.dto.PasswordChangeDTO;
 import com.david.shelter.dto.UserDTO;
@@ -39,6 +35,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
+    private final FileService fileService;
 
     // IMPLEMENTAMOS EL CRUD
 
@@ -108,8 +105,21 @@ public class UserService {
     public void updateUsername(UserDTO dto){
 
         User user = getUserFromContext();
+
+        // Si el nombre de usuario tiene menos de 3 caracteres, o mas de 10, o no empieza por una letra, no es valido
+        if(dto.username().length() < 3 || dto.username().length() > 10 || !Character.isLetter(dto.username().charAt(0))) {
+            throw new UserException("El nombre de usuario ha de empezar por al menos una letra y tener entre 3 y 10 caracteres");
+        }
+
+        if (!dto.email().equals(user.getEmail())){
+            throw new UserException("ese email no pertenece a este usuario");
+        }
+
+        if (!encoder.matches(dto.password(), user.getPassword())){
+            throw new UserException("La contraseña del usuario no es correcta");
+        }
         
-        // Si no se lanzo una excepcion, el usuario existe
+        // Si no se lanzo una excepcion, el usuario existe y sus datos son correctos
         user.setUsername(dto.username());
         
         try {
@@ -127,6 +137,10 @@ public class UserService {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado el usuario en la peticion de cambio de contraseña"));
+
+        if (dto.newPassword().length() < 8 || dto.newPassword().length() > 20) {
+            throw new UserException("La contraseña tiene que tener entre 8 y 20 caracteres");
+        }
 
         // Comprobamos que la contraseña nueva y su verificacion coinciden
         if (!dto.newPassword().equals(dto.newPasswordAgain())){
@@ -181,11 +195,10 @@ public class UserService {
     @Transactional 
     public void deleteUser(String userEmail) {
 
+        if (!Validator.isValidEmail(userEmail)) {
+            throw new InvalidEmailException("El email no es valido");
+        } 
         User user = getUserFromContext();
-
-        if (user.getRole() == Role.ROLE_ADMIN) {
-            throw new UserNotAuthorizedException("No se puede eliminar este usuario");
-        }
 
         // Si el usuario no es administrador y su email no es el email del usuario que se pretende borrar, lanzamos excepcion
         if (user.getRole()!=Role.ROLE_ADMIN && !user.getEmail().equals(userEmail)) {
@@ -195,9 +208,21 @@ public class UserService {
         User userToDelete = userRepository.findByEmail(userEmail)
         .orElseThrow(() -> new ResourceNotFoundException("No hay un usuario con ese email"));
 
+        // No se puede borrar la cuenta de administrador
+        if (userToDelete.getRole() == Role.ROLE_ADMIN) {
+            throw new UserNotAuthorizedException("No se puede eliminar este usuario");
+        }
+
         // Borramos la informacion de adopciones asociada al usuario
         adoptionRepository.deleteAll(adoptionRepository.findByAdopter(userToDelete));
         adoptionRepository.deleteAll(adoptionRepository.findByOwner(userToDelete));
+
+        // Borramos el usuario
         userRepository.delete(userToDelete);
+        // Hacemos el delete en la BD para ver que no haya errores antes de borrar su carpeta de usuario
+        userRepository.flush();
+        // ahora borramos la carpeta de imagenes que tenia asociada
+        fileService.deleteUserFolder(userToDelete.getId());
+        
     }
 }

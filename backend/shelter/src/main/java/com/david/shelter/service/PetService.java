@@ -9,10 +9,12 @@ import com.david.shelter.dto.PetDTO;
 import com.david.shelter.exception.PetException;
 import com.david.shelter.exception.ResourceNotFoundException;
 import com.david.shelter.mapper.PetMapper;
+import com.david.shelter.model.entity.Adoption;
 import com.david.shelter.model.entity.FosterHome;
 import com.david.shelter.model.entity.Pet;
 import com.david.shelter.model.entity.User;
 import com.david.shelter.model.enums.Province;
+import com.david.shelter.repository.AdoptionRepository;
 import com.david.shelter.repository.FosterHomeRepository;
 import com.david.shelter.repository.PetRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ public class PetService {
     private final FosterHomeRepository fosterHomeRepository;
     private final UserService userService;
     private final FileService fileService;
+    private final AdoptionRepository adoptionRepository;
 
     // CREATE
     @Transactional 
@@ -59,7 +62,7 @@ public class PetService {
         // Si llegamos hasta aqui, es que todos los datos son correctos, y podemos reguistrar la mascota, hemos diseñado el mapper de forma 
         // que nos pide el fosterHome (no tiene acceso a la capa de servicios ni de repositorios), asi tampoco nos podemos olvidar de asignalo antes de guardar
         Pet pet = PetMapper.toEntity(dto, fosterHome);
-        String imagePath = fileService.storeImage(image);
+        String imagePath = fileService.storeImage(image, user);
         pet.setImagePath(imagePath);
 
         try {
@@ -92,6 +95,11 @@ public class PetService {
     // la informacion antigua si me viene vacía, porque en el front puede dar la sensacion de que esta fallando el back si envio un campo vacio que tendría que venir relleno
     @Transactional 
     public PetDTO updatePet(PetDTO dto, MultipartFile image) {
+
+        // Si no se comprueba en findById del repository lanza un error antes de buscar.
+        if (dto.id() == null) {
+            throw new PetException("Hay que indicar el id de la mascota");
+        }
 
         // Comrpobamos primero que lso 3 campos obligatorios no vengan vacios.
         if (dto.name() == null || dto.name().isBlank()) {
@@ -139,7 +147,7 @@ public class PetService {
         // Si recibimos un MultipartFile no nulo y no vacio, reemplazamos la imagen por la nueva, y cambiamos la ruta en la entidad
         if (image != null && !image.isEmpty()) {
             // Tenemos controlado el imagePath == null en los propios metodos del FileService, tanto en update como en delete, asi que no salta excepcion
-            newImagePath = fileService.storeImage(image);
+            newImagePath = fileService.storeImage(image, user);
             pet.setImagePath(newImagePath);
         }
 
@@ -200,13 +208,18 @@ public class PetService {
         // Despues de borrar la mascota, borramos la imagen, al tener anotado el metodo como transactional, si falla la primera no se borra la segunda
         // pero para ello tenemos uqe hacer un flush, que es lo que hace el cambio en la BD, el delete solo lo guarda en cache
         String imagePath = pet.getImagePath();
-        try {
-            petRepository.delete(pet);
-            petRepository.flush();
-            fileService.deleteImage(imagePath);
-        } catch (RuntimeException e) {
-            throw new PetException("No se ha podido eliminar la mascota");
-        }
+
+        // Primero borramos las adociones asociadas a la mascota, poruqe si existe alguna el borrado fallará
+        List<Adoption> adoptionsByPet = adoptionRepository.findByPet(pet);
+        adoptionRepository.deleteAll(adoptionsByPet);
+
+        // Antes de borrar la mascota tenemos que quitarla de la foster home, esto se debe a que hemos marcado la relacion entre fosterhome y pet como eager
+        // y eso hace que la mascota este cargada en memoria tanto en la variable pet como en la variable fosterHome y eso puede dar lugar a error
+        pet.getFosterHome().getPets().remove(pet);
+        petRepository.delete(pet);
+        petRepository.flush();
+        fileService.deleteImage(imagePath);
+
     }
 
 }

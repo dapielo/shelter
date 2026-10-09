@@ -1,15 +1,7 @@
 package com.david.shelter.service;
 
-import java.util.List;
-
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.jaas.AuthorityGranter;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.david.shelter.dto.AuthenticationDTO;
 import com.david.shelter.dto.LoginRequestDTO;
 import com.david.shelter.dto.LoginResponseDTO;
@@ -18,7 +10,6 @@ import com.david.shelter.exception.ResourceNotFoundException;
 import com.david.shelter.model.entity.User;
 import com.david.shelter.model.enums.Role;
 import com.david.shelter.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
 
 @Service 

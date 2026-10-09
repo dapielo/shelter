@@ -55,6 +55,8 @@ public class SecurityConfig {
                 .requestMatchers("/shelter/fosterhome/**").authenticated()
                 .requestMatchers("/shelter/adoption/**").authenticated()
                 .requestMatchers("/shelter/user/**").authenticated()
+                .requestMatchers("/shelter/image/**").permitAll() // las imagenes las puede ver cualquiera 
+                .requestMatchers("/error").permitAll() // para posibles erroes que no esten capturados en el GlobalHandler, Spring redigira a este endpoint
                 .anyRequest().authenticated()
             );
 

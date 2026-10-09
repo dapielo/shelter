@@ -61,13 +61,13 @@ public class JwtService {
     public Role getRoleFromToken(String token) {
 
         try {
-            return Jwts.parser()
+            // usamos el valueOf porque el get del parser no me permite devolver directamente el Enum
+            return Role.valueOf(Jwts.parser()
                        .verifyWith(Keys.hmacShaKeyFor(CRYPTO_SEED.getBytes()))
                        .build()
                        .parseSignedClaims(token)
                        .getPayload()
-                       // usamos el metodo de dos argumentos porque el de uno devuelve un Object, este permite indicar el objeto
-                       .get("role", Role.class);
+                       .get("role",String.class).toUpperCase());
         } catch (Exception e) {
             throw new InvalidTokenException("No se ha podido extraer el rol de usuario del token");
         }

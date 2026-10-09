@@ -16,6 +16,8 @@ import com.david.shelter.dto.LoginResponseDTO;
 import com.david.shelter.dto.PasswordChangeDTO;
 import com.david.shelter.dto.UserDTO;
 import com.david.shelter.service.UserService;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController 
@@ -41,7 +43,7 @@ public class UserController {
     // Cambiar el nombre de usuario, recibe un campo "username" con el nuevo nombre de usuario
     @PreAuthorize ("isAuthenticated()")
     @PutMapping ("/edit/username")
-    public ResponseEntity<Void> changeUsername(@RequestBody UserDTO dto) {
+    public ResponseEntity<Void> changeUsername(@Valid @RequestBody UserDTO dto) {
 
         userService.updateUsername(dto);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -50,7 +52,7 @@ public class UserController {
     // Cambiar la contraseña
     @PreAuthorize ("isAuthenticated()")
     @PutMapping ("edit/password")
-    public ResponseEntity<Void> changePassword(@RequestBody PasswordChangeDTO dto) {
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody PasswordChangeDTO dto) {
 
         userService.updatePassword(dto);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -59,7 +61,7 @@ public class UserController {
     // Cambiar el email
     @PreAuthorize ("isAuthenticated()")
     @PutMapping ("/edit/email")
-    public ResponseEntity<LoginResponseDTO> changeEmail(@RequestBody EmailChangeDTO dto) {
+    public ResponseEntity<LoginResponseDTO> changeEmail(@Valid @RequestBody EmailChangeDTO dto) {
 
         LoginResponseDTO body = userService.updateEmail(dto);
         return new ResponseEntity<>(body,HttpStatus.OK);

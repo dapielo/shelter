@@ -10,6 +10,7 @@ import com.david.shelter.dto.UserDTO;
 import com.david.shelter.service.AuthService;
 import com.david.shelter.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -22,16 +23,17 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/shelter/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO login) {
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO login) {
         LoginResponseDTO body = authService.login(login);
         return new ResponseEntity<>(body,HttpStatus.ACCEPTED);
     }
     
     @PostMapping("/shelter/register")
-    public ResponseEntity<LoginResponseDTO> register(@RequestBody UserDTO dto) {
+    public ResponseEntity<LoginResponseDTO> register(@Valid @RequestBody UserDTO dto) {
         // Primero creamos el usuario
-        UserDTO newUser = userService.createUser(dto);
-        LoginRequestDTO login = new LoginRequestDTO(newUser.email(), newUser.password());
+        userService.createUser(dto);
+        // Si no salto error en la creacion del usuario, podemos seguir, cogemos la contraseña del DTO, porque el mapper que usa le servicio no conluye la contraseña
+        LoginRequestDTO login = new LoginRequestDTO(dto.email(), dto.password());
 
         // Ahora lo autenticamos y le devolvemos el token, para que no tenga que meter usuraio y contraseña justo despues de crear el usuario
         LoginResponseDTO body = authService.login(login);
