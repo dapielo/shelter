@@ -1,7 +1,7 @@
 package com.david.shelter.model.entity;
 
 import java.time.LocalDate;
-import com.david.shelter.model.enums.Status;
+import com.david.shelter.model.enums.AdoptionStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -52,5 +52,5 @@ public class Adoption {
     @NotNull  
     @Column (nullable = false)
     @Enumerated (EnumType.STRING)
-    private Status status;
+    private AdoptionStatus status;
 }

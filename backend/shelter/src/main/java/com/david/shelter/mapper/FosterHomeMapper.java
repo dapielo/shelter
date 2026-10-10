@@ -5,6 +5,7 @@ import java.util.List;
 import com.david.shelter.dto.FosterHomeDTO;
 import com.david.shelter.dto.PetDTO;
 import com.david.shelter.model.entity.FosterHome;
+import com.david.shelter.model.enums.PetStatus;
 
 public class FosterHomeMapper {
 
@@ -25,8 +26,11 @@ public class FosterHomeMapper {
     public static FosterHomeDTO toDTO(FosterHome fosterHome) {
 
         // Tenemos que hacer un mapeo previo del List de mascotas, para convertirlo en una lista de dtos, para luego añadirselo al FosterHome mapeado
+        // aprovechamos para filtar las mascotas que ya estan adoptadas, no las borramos para el historial, pero no deberian de salir cuando un usuario
+        // consulte sus casas de acogida o parecería que aún estan disponibles
         List<PetDTO> petsDTO = fosterHome.getPets()
             .stream()
+            .filter(pet -> pet.getStatus() == PetStatus.AVAILABLE)
             .map(PetMapper::toDTO)
             .toList();
             

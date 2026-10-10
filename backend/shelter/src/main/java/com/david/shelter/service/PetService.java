@@ -13,6 +13,7 @@ import com.david.shelter.model.entity.Adoption;
 import com.david.shelter.model.entity.FosterHome;
 import com.david.shelter.model.entity.Pet;
 import com.david.shelter.model.entity.User;
+import com.david.shelter.model.enums.PetStatus;
 import com.david.shelter.model.enums.Province;
 import com.david.shelter.repository.AdoptionRepository;
 import com.david.shelter.repository.FosterHomeRepository;
@@ -81,13 +82,22 @@ public class PetService {
         return PetMapper.toDTO(petRepository.findById(id).orElseThrow(() -> new PetException("No existe ninguna mascota con ese id")));
     }
 
-    // para obtener las mascotas en una provincia para los filtros de la aplicacion
+    // para obtener las mascotas en una provincia para los filtros de la aplicacion, solo para las disponibles
     public List<PetDTO> findByProvince(Province province) {
         
         return petRepository.findByFosterHomeProvince(province)
                 .stream()
+                .filter(pet -> pet.getStatus() == PetStatus.AVAILABLE)
                 .map(PetMapper::toDTO)
                 .toList();
+    }
+
+    // Devolvemos los 5 que llevan mas tiempo sin adoptar
+    public List<PetDTO> getVeterans() {
+        return petRepository.findOldestRegistered().stream()
+                    .map(PetMapper::toDTO)
+                    .filter(pet -> pet.status() == PetStatus.AVAILABLE)
+                    .toList();
     }
 
     // UPDATE 

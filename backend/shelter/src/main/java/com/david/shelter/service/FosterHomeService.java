@@ -66,7 +66,6 @@ public class FosterHomeService {
 
     // READ
     public List<FosterHomeDTO> findByUserWithPets() {
-        
         User user = userService.getUserFromContext();
 
         // Devolvemos la lista de coincidencias, mapeandolas antes como DTOs para enviarlas al front

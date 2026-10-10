@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.david.shelter.dto.AdoptionDTO;
 import com.david.shelter.exception.AdoptionException;
 import com.david.shelter.exception.AdptionAlreadyExistsException;
@@ -16,7 +15,8 @@ import com.david.shelter.mapper.AdoptionMapper;
 import com.david.shelter.model.entity.Adoption;
 import com.david.shelter.model.entity.Pet;
 import com.david.shelter.model.entity.User;
-import com.david.shelter.model.enums.Status;
+import com.david.shelter.model.enums.AdoptionStatus;
+import com.david.shelter.model.enums.PetStatus;
 import com.david.shelter.repository.AdoptionRepository;
 import com.david.shelter.repository.PetRepository;
 
@@ -37,6 +37,16 @@ public class AdoptionService {
         User user = userService.getUserFromContext();
         Pet pet = petRepository.findById(petId).orElseThrow(() -> new PetException("Mascota con id" + petId + " no econtrada"));
 
+        // Comrpobamos que no se intente realizar una adopcion sobre una mascota ya adoptada.
+        if (pet.getStatus() == PetStatus.ADOPTED) {
+            throw new AdoptionException("Esa mascota ya ha sido adoptada");
+        }
+
+        // Comprobamos que el usuario que adopta y el dueño no sean el mismo
+        if (user.getId().equals(pet.getFosterHome().getUser().getId())){
+            throw new AdoptionException("Estas intentando adoptar una mascota que tienes de acogida");
+        }
+
         // Si ya existe una solicitud de adopcion asociada a esta mascota y usuario, es que ya se hizo y lanzamos error
         adoptionRepository.findByPetAndAdopter(pet, user).ifPresent((adoption) -> {throw new AdptionAlreadyExistsException("Ya has hecho una solicitud de adopcion para esta mascota.");});
 
@@ -47,7 +57,7 @@ public class AdoptionService {
             pet, 
             LocalDate.now(), 
             null, 
-            Status.PENDING);   
+            AdoptionStatus.PENDING);   
 
         try {
             adoptionRepository.save(newAdoption);
@@ -67,7 +77,7 @@ public class AdoptionService {
         // Las convertimos a DTO antes de enviar y filtramos por las que estan pendientes
         return adoptions.stream()
                         .map(AdoptionMapper::toDTO)
-                        .filter(adoption -> adoption.status()==Status.PENDING)
+                        .filter(adoption -> adoption.status()==AdoptionStatus.PENDING)
                         .toList();
     }
 
@@ -80,7 +90,7 @@ public class AdoptionService {
         // Las convertimos a DTO y filtramos por las que estan pendientes
         return adoptions.stream()
                         .map(AdoptionMapper::toDTO)
-                        .filter(adoption -> adoption.status() == Status.PENDING)
+                        .filter(adoption -> adoption.status() == AdoptionStatus.PENDING)
                         .toList();
     }
 
@@ -95,7 +105,7 @@ public class AdoptionService {
 
         return history.stream()
                         .map(AdoptionMapper::toDTO)
-                        .filter(adoption -> adoption.status() != Status.PENDING)
+                        .filter(adoption -> adoption.status() != AdoptionStatus.PENDING)
                         .toList();
     }
 
@@ -107,30 +117,58 @@ public class AdoptionService {
         User user = userService.getUserFromContext();
         Adoption adoption = adoptionRepository.findById(adoptionId).orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado un proceso de adopcion con id: " + adoptionId));
 
+        if (adoption.getStatus() != AdoptionStatus.PENDING) {
+            throw new AdoptionException("Este proceso de adopcion ha sido cerrado");
+        }
+
         // Si no coincide el id del usuario dela peticion con el id del usuario que tiene a esta mascota de acogida lanzamos excepcion
         if (adoption.getPet().getFosterHome().getUser().getId().longValue() != user.getId()) {
             throw new AdoptionException("Este usuario no es el que tiene a esta mascota de acogida");
         }
 
-        adoption.setStatus(Status.ACCEPTED);
+        // La mascota tiene que estar disponible
+        if (adoption.getPet().getStatus() != PetStatus.AVAILABLE) {
+            throw new AdoptionException("Esa mascota ya ha sido adoptada");
+        }
+
+        adoption.setStatus(AdoptionStatus.ACCEPTED);
         adoption.setEndingDate(LocalDate.now());
+        adoption.getPet().setStatus(PetStatus.ADOPTED);
+
+        // Ahora vamos a buscar las posibles adopciones pendientes por otros usuarios y las vamos a maarcar como DECLINED poruqe se ha aceptado esta
+        List<Adoption> autoDeclined = adoptionRepository.findByPet(adoption.getPet()).stream()
+                            .filter(others -> others.getStatus() == AdoptionStatus.PENDING && others.getId().longValue() != adoption.getId()).toList();
+
+        autoDeclined.forEach(declined -> {
+            declined.setStatus(AdoptionStatus.DECLINED);
+            declined.setEndingDate(LocalDate.now());
+        });
+        adoptionRepository.saveAll(autoDeclined);
+
+        // Al guardar adoption, se actualiza tambien el estado de la mascota.
         adoptionRepository.save(adoption);
-        return user.getEmail();
+        return adoption.getAdopter().getEmail();
     }
 
     // Igual que el anterior pero para rechazar la peticion, asi no hay que enviar datos (van a ser dos endpoints)
     @Transactional 
     public void declineAdoptionPetition(Long adoptionId) {
 
+        
         User user = userService.getUserFromContext();
         Adoption adoption = adoptionRepository.findById(adoptionId).orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado un proceso de adopcion con id: " + adoptionId));
+        
+        // La adopcion tiene que estar como pendiente
+        if (adoption.getStatus() != AdoptionStatus.PENDING) {
+            throw new AdoptionException("Este proceso de adopcion ha sido cerrado");
+        }
 
         // Si no coincide el id del usuario dela peticion con el id del usuario que tiene a esta mascota de acogida lanzamos excepcion
         if (adoption.getPet().getFosterHome().getUser().getId().longValue() != user.getId()) {
             throw new AdoptionException("Este usuario no es el que tiene a esta mascota de acogida");
         }
 
-        adoption.setStatus(Status.DECLINED);
+        adoption.setStatus(AdoptionStatus.DECLINED);
         adoption.setEndingDate(LocalDate.now());
         adoptionRepository.save(adoption);
     }
@@ -146,7 +184,7 @@ public class AdoptionService {
         Optional<Adoption> adoption = adoptionRepository.findByPetAndAdopter(pet, user);
 
         // Si exsite y no ha sido respondida por la otra parte, la borramos, si no, no hacemos nada
-        if (adoption.isPresent() && adoption.get().getStatus() == Status.PENDING) {
+        if (adoption.isPresent() && adoption.get().getStatus() == AdoptionStatus.PENDING) {
             adoptionRepository.delete(adoption.get());
         }
     }

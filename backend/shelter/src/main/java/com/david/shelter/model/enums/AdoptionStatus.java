@@ -1,6 +1,6 @@
 package com.david.shelter.model.enums;
 
-public enum Status {
+public enum AdoptionStatus {
     PENDING,
     ACCEPTED,
     DECLINED

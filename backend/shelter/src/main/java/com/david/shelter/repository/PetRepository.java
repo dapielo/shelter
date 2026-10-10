@@ -16,4 +16,8 @@ public interface PetRepository extends JpaRepository<Pet,Long>{
     List<Pet> findByFosterHomeProvince(Province province);
 
     List<Pet> findByFosterHome(FosterHome fosterHome);
+
+    // Buscamos lso 5 que tiene la fecha de registro mas antigua, es para una de las pantallas del front
+    @Query ("SELECT p FROM Pet p ORDER BY p.registeredAt ASC LIMIT 5")
+    List<Pet> findOldestRegistered();
 }

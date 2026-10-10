@@ -21,6 +21,8 @@ import com.david.shelter.service.PetService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController 
 @RequestMapping ("/shelter/pet")
@@ -57,6 +59,14 @@ public class PetController {
         PetDTO body = petService.getPetById(id);
         return new ResponseEntity<>(body,HttpStatus.OK);
     }
+
+    @GetMapping("/veterans")
+    public ResponseEntity<List<PetDTO>> getVeterans() {
+        
+        List<PetDTO> body = petService.getVeterans();
+        return new ResponseEntity<>(body,HttpStatus.OK);
+    }
+    
 
     // UPDATE
     // para borrar la imagen, es una actualizacion de la mascota

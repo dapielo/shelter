@@ -1,6 +1,5 @@
 package com.david.shelter.service;
 
-import com.david.shelter.controller.UserController;
 import com.david.shelter.repository.AdoptionRepository;
 import java.util.List;
 import java.util.Optional;

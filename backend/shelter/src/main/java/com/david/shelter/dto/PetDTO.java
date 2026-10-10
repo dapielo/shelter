@@ -2,6 +2,7 @@ package com.david.shelter.dto;
 
 import java.time.LocalDate;
 import com.david.shelter.model.enums.AgeGroup;
+import com.david.shelter.model.enums.PetStatus;
 import com.david.shelter.model.enums.Species;
 
 import jakarta.validation.constraints.NotBlank;
@@ -20,5 +21,6 @@ public record PetDTO(
     LocalDate registeredAt,
     @NotNull (message = "tiene que tener una casa de acogida asociada")
     Long fosterHomeId,
+    PetStatus status,
     String imagePath
 ) { }

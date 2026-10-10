@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import com.david.shelter.dto.PetDTO;
 import com.david.shelter.model.entity.FosterHome;
 import com.david.shelter.model.entity.Pet;
+import com.david.shelter.model.enums.PetStatus;
 
 public class PetMapper {
 
@@ -20,6 +21,7 @@ public class PetMapper {
             dto.info(), 
             LocalDate.now(), 
             fosterHome,
+            PetStatus.AVAILABLE,
             null
         );
     }
@@ -35,6 +37,7 @@ public class PetMapper {
             pet.getInfo(), 
             pet.getRegisteredAt(), 
             pet.getFosterHome().getId(),
+            pet.getStatus(),
             pet.getImagePath()
         );
     }

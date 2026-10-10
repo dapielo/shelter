@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +24,7 @@ public class AdoptionController {
 
     // CREATE 
     @PreAuthorize ("isAuthenticated()")
-    @PutMapping ("/initiate/{petId}")
+    @PostMapping ("/initiate/{petId}")
     public ResponseEntity<AdoptionDTO> initiateAdoption(@PathVariable Long petId) {
 
         AdoptionDTO body = adoptionService.initiateAdoption(petId);
@@ -61,7 +62,7 @@ public class AdoptionController {
     // UPDATE
     // aceptar una solicitud de adopcion 
     @PreAuthorize ("isAuthenticated()")
-    @PutMapping ("/accept/{adoptionId}")
+    @PostMapping ("/accept/{adoptionId}")
     public ResponseEntity<String> acceptAdoptionPetition(@PathVariable Long adoptionId) {
 
         String body = adoptionService.acceptAdoptionPetition(adoptionId);

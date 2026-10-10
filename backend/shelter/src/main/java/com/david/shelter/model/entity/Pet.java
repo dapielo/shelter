@@ -3,6 +3,7 @@ package com.david.shelter.model.entity;
 import java.time.LocalDate;
 
 import com.david.shelter.model.enums.AgeGroup;
+import com.david.shelter.model.enums.PetStatus;
 import com.david.shelter.model.enums.Species;
 
 import jakarta.persistence.Column;
@@ -59,5 +60,9 @@ public class Pet {
     @NotNull 
     private FosterHome fosterHome;
 
+    @NotNull 
+    @Enumerated (EnumType.STRING)
+    private PetStatus status = PetStatus.AVAILABLE;
+    
     private String imagePath;
 }
