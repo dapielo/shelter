@@ -9,12 +9,12 @@
     </div>
     <div class="user-bar">
         <app-session class="session"/>
-        <img src="images/buscar.png" alt="Buscar">
+        <img src="images/search.png" alt="Buscar">
         @if(authService.isLogged()) {
-            <img src="images/cerrarSesion2.png" alt="Cerrar sesion" (click)="authService.logout()">
+            <img src="images/logout.png" alt="Cerrar sesion" (click)="authService.logout()">
         } @else {
             <a routerLink="/login">
-                <img src="images/iniciarSesion.png" alt="Iniciar sesion">
+                <img src="images/login.png" alt="Iniciar sesion">
             </a>
         }
     </div>
