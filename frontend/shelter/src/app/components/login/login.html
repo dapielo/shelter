@@ -1,0 +1,25 @@
+<!-- El class.visible evalua lo que hay dentro como si fuese un if para ver si le pone la clase o no -->
+<div class="error" [class.visible]="errorMessage()">
+    {{errorMessage()}}
+</div>
+<div class="form-container">
+    <form [formGroup]="formLogin" class="form" (ngSubmit)="onSubmit()">
+
+        <div class="form-field">
+            <label for="email">Email de usuario: </label>
+            <input type="text" name="email" formControlName="email" placeholder="Insertar email...">
+        </div>
+        <div class="form-field">
+            <label for="password">Contraseña: </label>
+            <input type="password" name="password" formControlName="password" placeholder="introduce tu contraseña...">
+        </div>
+        <div class="form-button">
+            <button type="submit">Iniciar Sesion</button>
+        </div>
+
+        <div class="form-register">
+            <span>No tienes una cuenta?</span>
+            <a routerLink="/register"><Button>Regístrate</Button></a>
+        </div>
+    </form>
+</div>

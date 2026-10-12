@@ -1,0 +1,66 @@
+:host {
+    --color-nav-hover: rgb(249, 240, 218);
+    --gris: rgb(64, 64, 64);
+    --color-nav: white;
+    --color-text: rgb(76, 47, 11);
+    --color-nav-shadow: rgb(230, 230, 230);
+    --color-nav-element-border: rgb(58, 80, 56);
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    /* Con position sticky y top 0 la barra se queda pegada a la parte superior de la pantalla */
+    position: sticky;
+    top: 0;
+}
+.navbar {
+    display: flex;
+    background-color: var(--color-nav);
+    box-shadow: 0px 0px 5px var(--color-nav-shadow);
+    justify-content: space-between;
+}
+.navbar-bar{
+    display: flex;
+    justify-content: center;
+    height: 60px;
+    gap: 20px
+}
+.navbar-bar a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--color-text);
+    margin: 7px 0px;
+    padding: 0px 20px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+}
+.navbar-bar a:hover {
+    background-color: var(--color-nav-hover);
+    transition: 500ms;
+}
+.navbar-bar img {
+    max-width: 40px;
+}
+.user-bar {
+    display: flex;
+    font-size: 0.8rem;
+    align-items: center;
+    justify-content: center;
+    margin-right: 40px;
+}
+.user-bar img {
+    max-height: 60px;
+    cursor: pointer;
+}
+.user-bar img:hover {
+    background-color: var(--color-nav-hover);
+    border-radius: 5px;
+    transition: 500ms;
+}
+
+.user-bar a {
+    display: flex;
+}
+.session {
+    margin-left: 30px;
+    min-width: 150px;
+}

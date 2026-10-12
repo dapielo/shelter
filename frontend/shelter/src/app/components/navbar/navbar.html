@@ -1,0 +1,21 @@
+<div class="navbar">
+    <div class="navbar-bar">
+        <a routerLink="/"><img src="images/shelter_icon.png" alt="Shelter"></a>
+        <a routerLink="/">Inicio</a>
+        <a routerLink="/search">Buscador</a>
+        <a routerLink="/pending">Adopciones Pendientes</a>
+        <a routerLink="/history">Historial</a>
+        <a routerLink="/homes">Mis hogares</a>
+    </div>
+    <div class="user-bar">
+        <app-session class="session"/>
+        <img src="images/buscar.png" alt="Buscar">
+        @if(authService.isLogged()) {
+            <img src="images/cerrarSesion2.png" alt="Cerrar sesion" (click)="authService.logout()">
+        } @else {
+            <a routerLink="/login">
+                <img src="images/iniciarSesion.png" alt="Iniciar sesion">
+            </a>
+        }
+    </div>
+</div>

@@ -1,0 +1,60 @@
+/* Este import carga la fuente Quattrocento */
+@import url('https://fonts.googleapis.com/css2?family=Quattrocento:wght@400;700&display=swap');
+.body {
+    justify-self: center;
+    width: 80%;
+    box-sizing: border-box;
+}
+.banner {
+    max-width: 100%;
+    animation: focus 1.2s ease-out both;
+}
+h1 {
+    font-family: 'Quattrocento', Arial, sans-serif;
+    font-size: 3rem;
+    text-align: center;
+    margin-top: 50px;
+    border-bottom: 1px solid black;
+    width: 50%;
+    justify-self: center;
+}
+h2{
+    text-align: center;
+    font-size: 2rem;
+}
+h3 {
+    text-align: center;
+    font-size: 2rem;
+    margin-top: 50px;
+}
+.block {
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-between;
+}
+
+@keyframes focus {
+    from {
+        opacity: 0;
+        filter: blur(15px);
+        transform: translateX(-40px);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateX(0px);
+    }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(-40px)
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
+

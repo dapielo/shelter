@@ -1,0 +1,17 @@
+:host {
+    --color-text: rgb(76, 47, 11);
+
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text);
+}
+a {
+    display: flex;
+    text-decoration: none;
+    color: var(--color-text-button);
+    padding: 7px 20px;
+    border-radius: 8px;
+}
