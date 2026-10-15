@@ -7,11 +7,13 @@
     --color-error-message: rgb(198, 77, 7);
 }
 .error {
-    margin-top: 20px;
+    margin-top: 30px;
     min-height: 20px;
     display: flex;
     justify-content: center;
     color: var(--color-error-message);
+    font-weight: bold;
+    font-size: 20px;
 }
 .visible {
     animation: float 0.5s ease-out;

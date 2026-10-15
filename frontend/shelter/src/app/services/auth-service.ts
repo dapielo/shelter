@@ -1,7 +1,9 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { UserSession } from '../model/UserSession';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
+import { UserDTO } from '../model/UserDTO';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +12,7 @@ import { Observable } from 'rxjs';
 // Servicio que se encarga de gestionar los tokens
 export class AuthService {
 
+  private router = inject(Router)
   // Injectamos el servicio httpClient
   private http = inject(HttpClient);
   // Definimos el endpoint
@@ -25,9 +28,14 @@ export class AuthService {
   public username = computed(() => this.userSession()?.username ?? null);
   public userId = computed(() => this.userSession()?.id ?? null);
 
-  // Devuelve el token almacenado en la propiedad, lleva () porque es un signal (son parecidos a funciones que propagan un aviso cuando su valor cambia)
-  getToken() : string | null {
-    return this.userSession()?.token ?? null;
+  // Devuelve las cabeceras de autenticacion para insertar en las peticiones que la necesitan
+  getHeaders() : HttpHeaders {
+    const token = this.token();
+    if (!token) {
+      return new HttpHeaders()
+    }
+    const headers = new HttpHeaders();
+    return headers.append("Authorization",`Bearer ${token}`);
   }
 
   // Carga el UserSession desde el localStorage
@@ -71,5 +79,13 @@ export class AuthService {
   logout() {
     localStorage.removeItem("userSession");
     this.userSession.set(null);
+    // El propio servicio nos lleva al inicio si cerramos sesion
+    this.router.navigate(["/"]);
+  }
+
+  // metodo para registarse 
+  register(user: UserDTO) {
+    // Devuelve un Observable el que se pueden subscribir en la llamada
+    return this.http.post<UserSession>(`${this.api}/register`, user);
   }
 }

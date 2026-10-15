@@ -16,12 +16,14 @@
     background-color: var(--color-nav);
     box-shadow: 0px 0px 5px var(--color-nav-shadow);
     justify-content: space-between;
+    align-items: center;
+    height: 50px;
 }
 .navbar-bar{
     display: flex;
     justify-content: center;
-    height: 60px;
-    gap: 20px
+    height: 100%;
+    gap: 10px
 }
 .navbar-bar a {
     display: flex;

@@ -4,7 +4,7 @@ import { AuthService } from '../../services/auth-service';
 
 @Component({
   selector: 'app-session',
-  imports: [RouterLink],
+  imports: [],
   templateUrl: './session.html',
   styleUrl: './session.css',
 })
