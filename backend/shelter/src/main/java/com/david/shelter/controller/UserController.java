@@ -11,12 +11,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.david.shelter.dto.EmailChangeDTO;
 import com.david.shelter.dto.LoginResponseDTO;
-import com.david.shelter.dto.PasswordChangeDTO;
+import com.david.shelter.dto.UpdateUserDTO;
 import com.david.shelter.dto.UserDTO;
 import com.david.shelter.service.UserService;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -40,12 +38,21 @@ public class UserController {
     }
 
     // UPDATE
+    @PreAuthorize ("isAuthenticated()")
+    @PutMapping ("/update")
+    public ResponseEntity<LoginResponseDTO> updateUser(@Valid @RequestBody UpdateUserDTO dto) {
+
+        LoginResponseDTO body = userService.updateUser(dto);
+        return new ResponseEntity<>(body,HttpStatus.OK);
+    }
+
+    /* 
     // Cambiar el nombre de usuario, recibe un campo "username" con el nuevo nombre de usuario
     @PreAuthorize ("isAuthenticated()")
-    @PutMapping ("/edit/username")
-    public ResponseEntity<Void> changeUsername(@Valid @RequestBody UserDTO dto) {
+    @PutMapping ("/edit/{username}")
+    public ResponseEntity<Void> changeUsername(@PathVariable String username) {
 
-        userService.updateUsername(dto);
+        userService.updateUsername(username);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -66,10 +73,10 @@ public class UserController {
         LoginResponseDTO body = userService.updateEmail(dto);
         return new ResponseEntity<>(body,HttpStatus.OK);
     }
-
+*/
     // DELETE
     @PreAuthorize ("isAuthenticated()") 
-    @DeleteMapping ("/edit/delete/{userEmail}")
+    @DeleteMapping ("/delete/{userEmail}")
     public ResponseEntity<Void> deleteuser(@PathVariable String userEmail) {
 
         userService.deleteUser(userEmail);

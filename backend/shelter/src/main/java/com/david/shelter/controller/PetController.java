@@ -18,10 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.david.shelter.dto.PetDTO;
 import com.david.shelter.model.enums.Province;
 import com.david.shelter.service.PetService;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController 

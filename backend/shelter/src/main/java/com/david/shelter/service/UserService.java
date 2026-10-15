@@ -12,6 +12,7 @@ import com.david.shelter.dto.AuthenticationDTO;
 import com.david.shelter.dto.EmailChangeDTO;
 import com.david.shelter.dto.LoginResponseDTO;
 import com.david.shelter.dto.PasswordChangeDTO;
+import com.david.shelter.dto.UpdateUserDTO;
 import com.david.shelter.dto.UserDTO;
 import com.david.shelter.exception.InvalidEmailException;
 import com.david.shelter.exception.PasswordNotMatchingException;
@@ -99,27 +100,78 @@ public class UserService {
     }
 
     // UPDATE
+
+    @Transactional 
+    public LoginResponseDTO updateUser(UpdateUserDTO dto) {
+
+        User user = getUserFromContext();
+
+        // Comrpobamos que le contraseña antigua es correcta
+        if (!encoder.matches(dto.password(), user.getPassword())) {
+            throw new PasswordNotMatchingException("La contraseña antigua no es correcta");
+        }
+
+        // Actualizacion de nombre de usuario (si lo trae)
+        if (dto.username() != null && !dto.username().isBlank()){
+
+            // Si el nombre de usuario tiene menos de 3 caracteres, o mas de 10, o no empieza por una letra, no es valido
+            if(dto.username().length() < 3 || dto.username().length() > 10 || !Character.isLetter(dto.username().charAt(0))) {
+                throw new UserException("El nombre de usuario ha de empezar por al menos una letra y tener entre 3 y 10 caracteres");
+            }
+
+            user.setUsername(dto.username());
+        }
+
+        // Actualizacion de contraseña (si traer una nueva)
+        if (dto.newPassword() != null && !dto.newPassword().isBlank()) {
+    
+            // Comprobamos la longitud de contraseña
+            if (dto.newPassword().length() < 8 || dto.newPassword().length() > 20) {
+                throw new UserException("La contraseña tiene que tener entre 8 y 20 caracteres");
+            }
+            
+            // Comprobamos que la contraseña nueva y su verificacion coinciden
+            if (!dto.newPassword().equals(dto.passwordVerification())){
+                throw new PasswordNotMatchingException("Las contraseña nueva y replica no coinciden");
+            }
+
+            user.setPassword(encoder.encode(dto.newPassword()));
+        }
+
+        // Actualizacion de email (si lo trae)
+        if (dto.email() != null && !dto.email().isBlank()) {
+    
+            // Comrpobamos que el email tenga un formato valido
+            if (!Validator.isValidEmail(dto.email())) {
+                throw new UserException("El formato del email no es valido");
+            }
+            // Comprobamos que el email no este ya en la base de datos, porque tiene que ser único.
+            if (!user.getEmail().equals(dto.email()) && userRepository.findByEmail(dto.email()).isPresent()) {
+                throw new InvalidEmailException("Ya existe un usuario con ese email");
+            }
+        
+            user.setEmail(dto.email());
+        }
+
+        userRepository.save(user);
+        String token = jwtService.generateToken(new AuthenticationDTO(user.getEmail(), user.getRole()));
+        return new LoginResponseDTO(user.getId(), user.getUsername(), token);
+    }
+/* 
+
     // este metodo es para cambiar el nombre de usuario, no devuelve nada
     @Transactional 
-    public void updateUsername(UserDTO dto){
+    public void updateUsername(String username){
 
         User user = getUserFromContext();
 
         // Si el nombre de usuario tiene menos de 3 caracteres, o mas de 10, o no empieza por una letra, no es valido
-        if(dto.username().length() < 3 || dto.username().length() > 10 || !Character.isLetter(dto.username().charAt(0))) {
+        if(username.length() < 3 || username.length() > 10 || !Character.isLetter(username.charAt(0))) {
             throw new UserException("El nombre de usuario ha de empezar por al menos una letra y tener entre 3 y 10 caracteres");
         }
-
-        if (!dto.email().equals(user.getEmail())){
-            throw new UserException("ese email no pertenece a este usuario");
-        }
-
-        if (!encoder.matches(dto.password(), user.getPassword())){
-            throw new UserException("La contraseña del usuario no es correcta");
-        }
         
-        // Si no se lanzo una excepcion, el usuario existe y sus datos son correctos
-        user.setUsername(dto.username());
+        // Si no se lanzo una excepcion, cambiamos el nombre
+        user.setUsername(username);
         
         try {
             userRepository.save(user);
@@ -183,12 +235,12 @@ public class UserService {
         try {
             userRepository.saveAndFlush(user);
             String token = jwtService.generateToken(new AuthenticationDTO(newEmail, user.getRole()));
-            return new LoginResponseDTO(user.getId(), token);
+            return new LoginResponseDTO(user.getId(),user.getUsername(), token);
         } catch (RuntimeException e) {
             throw new UserException("No se ha podido cambiar el email del Usuario");
         }
     }
-
+*/
     // DETELE 
     // Al no ser una aplicacion comercial, si un usuario desea eliminar sus usuario, se respeta su privacidad y se eliminan todos los datos asociados
     @Transactional 

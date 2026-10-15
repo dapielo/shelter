@@ -1,6 +1,7 @@
 package com.david.shelter.mapper;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import com.david.shelter.dto.PetDTO;
 import com.david.shelter.model.entity.FosterHome;
@@ -35,7 +36,7 @@ public class PetMapper {
             pet.getBreed(), 
             pet.getAgeGroup(), 
             pet.getInfo(), 
-            pet.getRegisteredAt(), 
+            pet.getRegisteredAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), 
             pet.getFosterHome().getId(),
             pet.getStatus(),
             pet.getImagePath()

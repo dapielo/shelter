@@ -18,7 +18,7 @@ public record PetDTO(
     String breed,
     AgeGroup ageGroup,
     String info,
-    LocalDate registeredAt,
+    String registeredAt,
     @NotNull (message = "tiene que tener una casa de acogida asociada")
     Long fosterHomeId,
     PetStatus status,
