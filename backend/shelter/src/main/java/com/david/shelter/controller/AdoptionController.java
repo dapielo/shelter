@@ -63,10 +63,10 @@ public class AdoptionController {
     // aceptar una solicitud de adopcion 
     @PreAuthorize ("isAuthenticated()")
     @PostMapping ("/accept/{adoptionId}")
-    public ResponseEntity<String> acceptAdoptionPetition(@PathVariable Long adoptionId) {
+    public ResponseEntity<Void> acceptAdoptionPetition(@PathVariable Long adoptionId) {
 
-        String body = adoptionService.acceptAdoptionPetition(adoptionId);
-        return new ResponseEntity<>(body,HttpStatus.OK);
+        adoptionService.acceptAdoptionPetition(adoptionId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // rechazar una solicitud de adopcion

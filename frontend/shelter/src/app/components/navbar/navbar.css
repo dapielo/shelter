@@ -16,7 +16,7 @@
 .navbar {
     display: flex;
     background-color: var(--color-nav);
-    box-shadow: 0px 0px 5px var(--color-nav-shadow);
+    box-shadow: 0px 0px 2px var(--color-nav-shadow);
     justify-content: space-between;
     align-items: center;
     height: 50px;
@@ -58,7 +58,7 @@
 .user-bar img:hover {
     background-color: var(--color-nav-hover);
     border-radius: 5px;
-    transition: 500ms;
+    transition: 800ms;
 }
 
 .user-bar a {

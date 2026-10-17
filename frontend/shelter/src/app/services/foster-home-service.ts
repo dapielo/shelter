@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { AuthService } from './auth-service';
 import { Observable } from 'rxjs';
 import { FosterHomeDTO } from '../model/FosterHomeDTO';
+import { environment } from '../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,7 @@ import { FosterHomeDTO } from '../model/FosterHomeDTO';
 // Este servicio devuelve una peticion para cada uno de lso endpoints que tiene el backend derivados de /fosterhome
 export class FosterHomeService {
 
-  private api: string = "http://127.0.0.1:8080/shelter/fosterhome";
+  private api: string = environment.api+"/fosterhome";
   private http: HttpClient = inject(HttpClient)
   private auth: AuthService= inject(AuthService);
 

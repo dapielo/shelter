@@ -1,7 +1,66 @@
 /* You can add global styles to this file, and also import other style files */
+:root{
+    --text-color: rgb(76, 47, 11);
+    --background-color: rgb(252, 251, 247);
+    --color-shadow: rgb(158, 143, 117);
+    --color-input-outline: rgb(182, 172, 150);
+    --color-button: rgb(252, 250, 247);
+    --color-button-accent: rgb(249, 241, 230);
+    --color-shadow: rgb(127, 104, 64);
+    --color-box-shadow: rgba(97, 80, 50, 0.6)
+}
 body{
     margin: 0 auto;
     font-family: Arial, sans-serif;
-    background-color: rgb(255, 251, 239);
-    color: rgb(76, 47, 11);
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+@keyframes pop {
+  
+    to {
+        transform: translate(-5px,-5px) scale(1.01);
+        box-shadow: 3px 3px 3px var(--color-box-shadow);
+        
+    }
+}
+@keyframes focus {
+    from {
+        opacity: 0;
+        filter: blur(15px);
+        transform: translateX(-40px);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateX(0px);
+    }
+}
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(-40px)
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+@keyframes float {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    } to {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+@keyframes dissapear {
+    from {
+        background-color: white;
+        box-shadow: 0 0 2px var(--color-shadow);
+
+    } to {
+        background-color: transparent;
+        box-shadow: none;
+    }
 }

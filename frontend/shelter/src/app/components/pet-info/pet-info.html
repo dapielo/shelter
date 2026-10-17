@@ -1,1 +1,43 @@
-<p>pet-info works!</p>
+<div class="pet-name">
+    <h1> {{petFormatted().name?.toUpperCase()}} </h1>
+</div>
+<div class="pet-image">
+    <img [src]="imageRoute()" alt="Imagen de la mascota">
+</div>
+<div class="pet-info">
+    <div class="info-item">
+        <span class="item-decorated">Nombre: </span><span class="item-specific">{{petFormatted().name}} </span>
+    </div>
+    <div class="info-item">
+        <span class="item-decorated">Especie: </span><span class="item-specific">{{petFormatted().species}} </span>
+    </div>
+    <div class="info-item">
+        <span class="item-decorated">Raza: </span><span class="item-specific"> {{petFormatted().breed}} </span>
+    </div>
+    <div class="info-item">
+        <span class="item-decorated">Grupo de edad: </span><span class="item-specific">{{petFormatted().ageGroup}} </span>
+    </div>
+    <div class="info-item">
+        <span class="item-decorated">Registrado en:</span><span class="item-specific"> {{petFormatted().registeredAt}} </span>
+    </div>
+    <div class="info-item">
+        <span class="item-decorated">Estado: </span><span class="item-specific">{{petFormatted().status == 'AVAILABLE' ? 'Esperando hogar' : 'Adoptado'}} </span>
+    </div>
+</div>
+@if(this.petFormatted().info) {
+    
+    <div class="aditional-info">
+        <p class="item-decorated title">Informacion Adicional</p>
+        <p class="item-specific"> {{petFormatted().info}} </p>
+    </div>
+} @else {
+    <div class="aditional-info">
+        <p class="item-decorated title">No hay mas informacion sobre: {{petFormatted().name}} </p>
+    </div>
+}
+@if (petFormatted().status === 'AVAILABLE') {
+
+    <div class="adoption-button" (click)="initiateAdoption()">
+        SOLICITAR ADOPCION
+    </div>
+}

@@ -1,9 +1,9 @@
 <div class="card" (click)="toPetInfo()">
-    <div>    
+    <div class="card-image">    
         @if (imgRoute()){
             <img src={{imgRoute()}} alt="Imagen de la mascota">
         } @else {
-            <img src="/public/images/shelter_icon.png" alt="Imagen de la mascota">
+            <img src="/public/images/default_photo.png" alt="Imagen de la mascota">
         }
     </div>
     <div class="card-info">

@@ -4,14 +4,15 @@ import { AuthService } from './auth-service';
 import { UserDTO } from '../model/UserDTO';
 import { UserUpdateDTO } from '../model/UserUpdateDTO';
 import { UserSession } from '../model/UserSession';
+import { environment } from '../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
 
+  private api : string = environment.api+'/user';
   private http = inject(HttpClient);
-  private api : string = 'http://127.0.0.1:8080/shelter/user';
   private auth: AuthService = inject(AuthService);
 
     public getUsers() {

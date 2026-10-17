@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from './auth-service';
 import { PetDTO } from '../model/PetDTO';
+import { environment } from '../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,7 @@ import { PetDTO } from '../model/PetDTO';
 // tiene un metodo para cada endpoint del backend que deriva de /pet
 export class PetService {
 
-  private api: string = "http://127.0.0.1:8080/shelter/pet";
+  private api: string = environment.api+"/pet";
   private http: HttpClient = inject(HttpClient)
   private auth: AuthService= inject(AuthService);
 

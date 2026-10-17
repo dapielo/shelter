@@ -1,0 +1,78 @@
+:host{
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+.pet-image{
+    display: flex;
+    justify-content: center;
+}
+.pet-image img {
+    border-radius: 20px;
+    width: 800px;
+}
+.pet-name{
+    margin: 40px 0;
+}
+.pet-name h1 {
+    text-align: center;
+    font-size: 3rem;
+}
+.pet-info{
+    border: 1px solid var(--color-shadow);
+    padding: 20px;
+    border-radius: 10px;
+    width: 760px; /*760 porque tenemos 20 + 20 de padding y quiero que cuadre con la foto*/
+    font-weight: 600;
+    margin-top: 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-self: center;
+    justify-items: start;
+    gap: 60px;
+    font-size: 1.2rem;
+    background-color: var(--color-button-accent);
+}
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+.info-item span {
+    text-align: start;
+}
+.item-decorated {
+    color: black;
+}
+.item-specific{
+    color: rgb(155, 98, 36);
+}
+.aditional-info {
+    width: 760px;
+    padding: 20px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    border: 1px solid var(--color-shadow);
+    border-radius: 10px;
+    font-size: 1.2rem;
+    background-color: var(--color-button-accent);
+
+}
+.title{
+    text-align: center;
+    font-size: 1.5rem;
+}
+.adoption-button {
+    margin-top: 20px;
+    margin-bottom: 40px;
+    text-align: center;
+    justify-self: center;
+    align-content: center;
+    width: 200px;
+    height: 60px;
+    border: 1px solid var(--color-shadow);
+    border-radius: 10px;
+    background-color: var(--color-button-accent);
+}
+.adoption-button:hover {
+    background-color: rgba(252, 217, 162, 0.629);
+}

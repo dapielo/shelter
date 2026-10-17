@@ -4,6 +4,7 @@ import { PetDTO } from '../../model/PetDTO';
 import { SpeciesLabel } from '../../model/SpeciesLabels';
 import { AgeGroupLabel } from '../../model/AgeGroupLabel';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment.development';
 
 @Component({
   selector: 'app-pet-card',
@@ -19,14 +20,14 @@ export class PetCard {
     pet = input.required<PetDTO>();
     
     petFormatted = computed(() => {
-      const pet = this.pet();
       // hacemos un cambio en species (campo no nulo) y ageGroup (campo opcional) y usamos este objeto formateado para renderizar
-      return {...pet, species:SpeciesLabel[pet.species], ageGroup:AgeGroupLabel[pet.ageGroup ?? '']}
+      return {...this.pet(), 
+        species:SpeciesLabel[this.pet().species], 
+        ageGroup:AgeGroupLabel[this.pet().ageGroup ?? ''] ?? 'desconocido'}
     });
 
-    // el campo de imagen no es obligatorio asi que le metemos undefined tambien
-    imgRoute = computed<string | null>(() => {
-      return this.petFormatted().imagePath ? `http://127.0.0.1:8080/shelter/image/${this.petFormatted().imagePath}` : `images/shelter_icon.png` ;
+    imgRoute = computed<string>(() => {
+      return this.petFormatted().imagePath ? `${environment.api}/image/${this.petFormatted().imagePath}` : `images/default_photo.png` ;
     });
 
     toPetInfo() {

@@ -1,6 +1,6 @@
 :host {
     --border-color: rgb(99, 79, 39);
-    --background-color: rgb(255, 255, 254);
+    --background-color: rgb(252, 251, 247);
 }
 .card {
     border: 1px solid var(--border-color);
@@ -16,14 +16,22 @@
     cursor: pointer;
 }
 .card-info {
+    max-width: 65%;
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: start;
     gap: 10px;
 }
+.card-image{
+    max-width: 35%;
+}
 .card img {
     margin: 10px;
-    max-height: 100px;
+    height: 100px;
+    width: 150px;
     border-radius: 10px;
+    /* Esto hacer que si la imagen no entra en su recuado se oculta lo que no entra*/
+    object-fit: cover;
+    object-position: center;
 }
