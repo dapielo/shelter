@@ -1,0 +1,14 @@
+<div class="card" (click)="toPetInfo()">
+    <div>    
+        @if (imgRoute()){
+            <img src={{imgRoute()}} alt="Imagen de la mascota">
+        } @else {
+            <img src="/public/images/shelter_icon.png" alt="Imagen de la mascota">
+        }
+    </div>
+    <div class="card-info">
+        <span>Nombre: {{petFormatted().name}}</span>    
+        <span>Especie: {{petFormatted().species}} </span>
+        <span>Edad estimada: {{petFormatted().ageGroup}} </span>
+    </div>
+</div>

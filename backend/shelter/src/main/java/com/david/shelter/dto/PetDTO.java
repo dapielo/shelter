@@ -1,10 +1,8 @@
 package com.david.shelter.dto;
 
-import java.time.LocalDate;
 import com.david.shelter.model.enums.AgeGroup;
 import com.david.shelter.model.enums.PetStatus;
 import com.david.shelter.model.enums.Species;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

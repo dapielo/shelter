@@ -2,11 +2,13 @@ import { Routes } from '@angular/router';
 import { Home } from './components/home/home';
 import { Login } from './components/login/login';
 import { Register } from './components/register/register';
+import { PetInfo } from './components/pet-info/pet-info';
 
 export const routes: Routes = [
     // Ojo con las rutas, nunca empiezan por "/"
     {path:"",component:Home},
     {path:"home",component:Home},
     {path:"login",component:Login},
-    {path:"register",component:Register}
+    {path:"register",component:Register},
+    {path:"pet/**",component:PetInfo}
 ];

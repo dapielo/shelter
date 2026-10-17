@@ -10,6 +10,8 @@
     /* Con position sticky y top 0 la barra se queda pegada a la parte superior de la pantalla */
     position: sticky;
     top: 0;
+    /* Sin el z-index, la imagen qeu esta animada, como css crea una nueva capa por la animacion, le pasaba por delante*/
+    z-index: 1;
 }
 .navbar {
     display: flex;

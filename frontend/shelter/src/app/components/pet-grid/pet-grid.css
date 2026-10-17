@@ -1,0 +1,12 @@
+:host {
+    --color-background: rgb(253, 234, 205);
+    --color-shadow: rgb(97, 80, 50);
+}
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background-color: var(--color-background);
+    box-shadow: 0 0 5px var(--color-shadow);
+    padding: 20px;
+    gap: 10px;
+}

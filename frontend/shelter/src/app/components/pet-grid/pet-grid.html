@@ -1,0 +1,6 @@
+<div class="grid">
+    <!-- El track es la forma que tiene angular de identificar cada elemento -->
+    @for(pet of pets(); track pet.id) {
+        <app-pet-card class="grid-card" [pet]="pet"></app-pet-card>
+    }
+</div>

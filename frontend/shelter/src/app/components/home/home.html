@@ -10,7 +10,9 @@
 
     <h3>Nuestros veteranos de shelter están esperando por alguien como tu.</h3>
 
-    <div class="card-grid">
-        
-    </div>
+    @if(pets()) {
+        <app-pet-grid [pets]="pets()"></app-pet-grid>
+    } @else {
+        <div>No se ha podido cargar la lista de veteranos.</div>
+    }
 </div>
