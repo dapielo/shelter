@@ -13,7 +13,7 @@ import com.david.shelter.service.FileService;
 import lombok.RequiredArgsConstructor;
 
 @RestController 
-@RequiredArgsConstructor 
+@RequiredArgsConstructor  
 public class ImageController {
 
     private final FileService fileService;
