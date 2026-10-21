@@ -42,6 +42,6 @@ public class AuthService {
 
         // le pasamos el objeto auth para que cree el token con el, y lo devolvemos 
         String token = jwtService.generateToken(auth);
-        return new LoginResponseDTO(user.getId(), user.getUsername(), token);
+        return new LoginResponseDTO(user.getId(), user.getUsername(), user.getEmail(), token);
     }
 }

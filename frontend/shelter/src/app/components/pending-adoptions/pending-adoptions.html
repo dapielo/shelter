@@ -1,1 +1,24 @@
-<p>pending-adoptions works!</p>
+<div class="body">
+
+    <div class="message"> {{message()}} </div>
+    <div class="errorMessage"> {{errorMessage()}} </div>
+
+    <h1 class="title">Solicitudes sobre mis mascotas</h1>
+
+    @if (adoptionsAsOwner().length === 0) {
+        <h2>No hay solicitudes pendientes</h2>
+    } @else {
+        <app-adoption-grid [adoptions]="adoptionsAsOwner()" [isOwner]="true" class="pet-card"
+        (acceptAdoption)="onAccept($event)"
+        (declineAdoption)="onDecline($event)"/>
+    }
+
+    <h1 class="title">Mis solicitudes</h1>
+    
+    @if (adoptionsAsAdopter().length === 0) {
+        <h2>No hay solicitudes pendientes</h2>
+    } @else {  
+        <app-adoption-grid [adoptions]="adoptionsAsAdopter()" [isOwner]="false" class="pet-card"
+        (deleteAdoption)="onDelete($event)"/>
+    }
+</div>

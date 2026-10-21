@@ -2,6 +2,7 @@ package com.david.shelter.dto;
 
 import java.time.LocalDate;
 import com.david.shelter.model.enums.AdoptionStatus;
+import com.david.shelter.model.enums.Species;
 
 // No hago comprobaciones porue esta entidad nunca me viene de fuera, la uso uso desde dentro para enviar datos al front
 public record AdoptionDTO(
@@ -13,6 +14,7 @@ public record AdoptionDTO(
     AdoptionStatus status,
     // Estos campos no existe en la Entidad, se va usar para las solicitudes aceptadas de adopcion, y se va a rellenar con la informacion de 
     // un usuario u otro al momento de hacer la peticion, en caso de que la adopcion tenga marcada como status ACCEPTED
-    String ownerEmail,
-    String adopterEmail
+    String email,
+    Species species,
+    String imagePath
 ) { }

@@ -5,6 +5,7 @@ export interface AdoptionDTO {
     initialDate: string,
     endingDate?: string,
     status: string,
-    ownerEmail?: string,
-    adopterEmail?: string
+    email?: string,
+    species: string,
+    imagePath: string
 }

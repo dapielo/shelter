@@ -24,7 +24,7 @@
         <span class="item-decorated">Estado: </span><span class="item-specific">{{petFormatted().status == 'AVAILABLE' ? 'Esperando hogar' : 'Adoptado'}} </span>
     </div>
 </div>
-@if(this.petFormatted().info) {
+@if(petFormatted().info) {
     
     <div class="aditional-info">
         <p class="item-decorated title">Informacion Adicional</p>
@@ -35,6 +35,11 @@
         <p class="item-decorated title">No hay mas informacion sobre: {{petFormatted().name}} </p>
     </div>
 }
+
+<div class="error" [class.visible]="errorMessage()">
+    {{errorMessage()}}
+</div>
+
 @if (petFormatted().status === 'AVAILABLE') {
 
     <div class="adoption-button" (click)="initiateAdoption()">

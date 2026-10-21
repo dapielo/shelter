@@ -1,7 +1,7 @@
 :host {
     --color-nav-hover: rgb(249, 240, 218);
     --gris: rgb(64, 64, 64);
-    --color-nav: white;
+    --color-nav: rgb(255, 255, 255);
     --color-text: rgb(76, 47, 11);
     --color-nav-shadow: rgb(230, 230, 230);
     --color-nav-element-border: rgb(58, 80, 56);

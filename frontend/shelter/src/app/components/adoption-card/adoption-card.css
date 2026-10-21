@@ -1,0 +1,58 @@
+:host {
+    --border-color: rgb(99, 79, 39);
+    --background-color: rgb(252, 251, 247);
+}
+.card {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    text-align: left;
+    background-color: var(--background-color);
+    height: 130px;
+    gap:20px;
+}
+.card-info {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.info-item{
+    display: flex;
+    flex-direction: column;
+}
+.card img {
+    display: flex;
+    align-self: center;
+    margin: 10px;
+    border-radius: 10px;
+    width: 200px;
+    height: 120px;
+    object-fit: cover;
+    object-position: center;
+}
+.buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}
+.buttons button{
+    width: 80px;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: var(--color-button-accent);
+}
+.buttons button:hover {
+    background-color: rgba(252, 217, 162, 0.629);
+    cursor: pointer;
+}
+.item-data{
+    color: var(--text-grey);
+}
+.item-field{
+    font-weight: 600;
+}

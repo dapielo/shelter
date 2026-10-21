@@ -43,10 +43,10 @@ export class AdoptionService {
     return this.http.put<void>(`${this.api}/decline/${adoptionId}`,null,{headers: this.auth.getHeaders()});
   }
   
-  // No es para borrar cualquier adopcion, solo se pueden borrar las que estan sin cerrar
-  public deleteAdoption(adoptionId: number) {
+  // No es para borrar cualquier adopcion, solo se pueden borrar las que estan sin cerrar, pide el id de la mascota
+  public deleteAdoption(petId: number) {
     
-    return this.http.delete<void>(`${this.api}/delete/${adoptionId}`,{headers: this.auth.getHeaders()});
+    return this.http.delete<void>(`${this.api}/delete/${petId}`,{headers: this.auth.getHeaders()});
   }
 
 }

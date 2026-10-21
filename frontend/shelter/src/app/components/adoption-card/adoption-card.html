@@ -1,0 +1,37 @@
+<div class="card">
+    <img [src]="image()" alt="Foto mascota">
+
+    <div class="card-info">
+
+        <div class="info-item">
+            <span class="item-field">Nombre: </span>
+            <span class="item-data"> {{adoption().petName}} </span>
+        </div>
+
+        <div class="info-item">
+            <span class="item-field">Especie: </span>
+            <span class="item-data"> {{species()}} </span>
+        </div>
+
+        <div class="info-item">
+            <span class="item-field">Email contacto:</span>
+            <span class="item-data"> {{adoption().email ?? 'pendiente de resolver...'}} </span>
+        </div>
+
+        <div class="info-item">
+            <span class="item-field">Estado :</span>
+            <span class="item-data"> {{adoptionStatus()}} </span>
+        </div>
+
+        <div class="info-item buttons">
+                
+            @if (isOwner()) {
+                <button (click)="acceptAdoption.emit(adoption().id)">Aceptar</button>
+                <button (click)="declineAdoption.emit(adoption().id)">Rechazar</button>
+            } @else {
+                <button (click)="deleteAdoption.emit(adoption().petId)">Abortar</button>
+            }
+        </div>
+    </div>
+
+</div>

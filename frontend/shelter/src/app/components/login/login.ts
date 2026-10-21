@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth-service';
@@ -11,11 +11,13 @@ import { AuthService } from '../../services/auth-service';
   styleUrl: './login.css',
 })
 
-export class Login {
+export class Login implements OnInit{
 
   authService = inject(AuthService);
   router = inject(Router);
   errorMessage = signal<string>('');
+  // este error captura el queryParam error que le envian otros componentes bajo ciertas acciones que requieren de autenticacion
+  error = input<string>();
 
   // en los formualrios reactivos el nombre del campo tiene que coincidir con el formControlName en el html, el primer parametro es el valor por defecto
   // el segundo parametro son loa validadores de las bibliotecas de angular (podemos crear validadores tambien)
@@ -31,6 +33,14 @@ export class Login {
       Validators.maxLength(20)
     ])
   });
+
+  ngOnInit() {
+    
+    const error = this.error() ?? null;
+    if (error) {
+      this.errorMessage.set(error);
+    }
+  }
 
   onSubmit() {
 

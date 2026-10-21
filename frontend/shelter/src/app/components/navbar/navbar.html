@@ -3,9 +3,10 @@
         <a routerLink="/"><img src="images/shelter_icon.png" alt="Shelter"></a>
         <a routerLink="/">Inicio</a>
         <a routerLink="/search">Buscador</a>
-        <a routerLink="/pending">Adopciones Pendientes</a>
-        <a routerLink="/history">Historial</a>
-        <a routerLink="/homes">Mis hogares</a>
+        <!-- los corchetes se usan cuando queremos acceder al ts para meter logica en la plantilla -->
+        <a [routerLink]="authService.isLogged() ? '/adoptions/pending' : '/login'">Adopciones Pendientes</a>
+        <a [routerLink]="authService.isLogged() ? '/adoptions/history' : '/login'">Historial</a>
+        <a [routerLink]="authService.isLogged() ? '/fosterhomes' : '/login'">Mis hogares</a>
     </div>
     <div class="user-bar">
         <app-session class="session"/>

@@ -7,7 +7,6 @@ import { routes } from './app.routes';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
     // Esto me permite capturar variables de las rutas de los componetnes
     provideRouter(routes,withComponentInputBinding()),
     provideHttpClient()

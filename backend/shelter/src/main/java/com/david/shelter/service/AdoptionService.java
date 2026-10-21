@@ -61,7 +61,7 @@ public class AdoptionService {
 
         try {
             adoptionRepository.save(newAdoption);
-            return AdoptionMapper.toDTO(newAdoption);
+            return AdoptionMapper.toDTO(newAdoption,null);
         } catch (AdoptionException e) {
             throw new AdoptionException("No se ha podido iniciar la adopcion");
         }
@@ -76,7 +76,7 @@ public class AdoptionService {
 
         // Las convertimos a DTO antes de enviar y filtramos por las que estan pendientes
         return adoptions.stream()
-                        .map(AdoptionMapper::toDTO)
+                        .map((adoption) -> AdoptionMapper.toDTO(adoption,adoption.getPet().getFosterHome().getUser().getEmail()))
                         .filter(adoption -> adoption.status()==AdoptionStatus.PENDING)
                         .toList();
     }
@@ -89,7 +89,7 @@ public class AdoptionService {
 
         // Las convertimos a DTO y filtramos por las que estan pendientes
         return adoptions.stream()
-                        .map(AdoptionMapper::toDTO)
+                        .map((adoption) -> AdoptionMapper.toDTO(adoption, adoption.getAdopter().getEmail()))
                         .filter(adoption -> adoption.status() == AdoptionStatus.PENDING)
                         .toList();
     }
@@ -98,13 +98,15 @@ public class AdoptionService {
     public List<AdoptionDTO> getAdoptionsHistory() {
 
         User user = userService.getUserFromContext();
-        List<Adoption> history = new ArrayList<>();
+        List<AdoptionDTO> history = new ArrayList<>();
 
-        history.addAll(adoptionRepository.findByOwner(user));
-        history.addAll(adoptionRepository.findByAdopter(user));
+        history.addAll(adoptionRepository.findByOwner(user).stream()
+                        .map((adoption) -> AdoptionMapper.toDTO(adoption,adoption.getAdopter().getEmail())).toList());
+
+        history.addAll(adoptionRepository.findByAdopter(user).stream()
+                        .map((adoption) -> AdoptionMapper.toDTO(adoption, adoption.getPet().getFosterHome().getUser().getEmail())).toList());
 
         return history.stream()
-                        .map(AdoptionMapper::toDTO)
                         .filter(adoption -> adoption.status() != AdoptionStatus.PENDING)
                         .toList();
     }

@@ -9,7 +9,7 @@ import com.david.shelter.model.enums.AdoptionStatus;
 // en el endpoint correspondiente
 public class AdoptionMapper {
 
-    public static AdoptionDTO toDTO(Adoption adoption) {
+    public static AdoptionDTO toDTO(Adoption adoption, String email) {
 
         return new AdoptionDTO(
             adoption.getId(), 
@@ -19,8 +19,9 @@ public class AdoptionMapper {
             adoption.getEndingDate(),
             adoption.getStatus(),
             // los emails solo se rellenan si una solicitud de adopcion ha sido aceptada
-            adoption.getStatus() == AdoptionStatus.ACCEPTED ? adoption.getPet().getFosterHome().getUser().getEmail() : null,
-            adoption.getStatus() == AdoptionStatus.ACCEPTED ? adoption.getAdopter().getEmail() : null
+            adoption.getStatus() == AdoptionStatus.ACCEPTED ? email : null,
+            adoption.getPet().getSpecies(),
+            adoption.getPet().getImagePath()
         );
     }
 }

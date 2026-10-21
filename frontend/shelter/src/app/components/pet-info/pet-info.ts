@@ -6,6 +6,7 @@ import { SpeciesLabel } from '../../model/SpeciesLabels';
 import { AgeGroupLabel } from '../../model/AgeGroupLabel';
 import { environment } from '../../../environments/environment.development';
 import { AdoptionService } from '../../services/adoption-service';
+import { AuthService } from '../../services/auth-service';
 
 @Component({
   selector: 'app-pet-info',
@@ -15,12 +16,15 @@ import { AdoptionService } from '../../services/adoption-service';
 })
 export class PetInfo implements OnInit {
 
+  // Inyeccion de dependencias
+  auth = inject(AuthService);
+  router = inject(Router);
+  petService = inject(PetService);
+  adoptionService = inject(AdoptionService);
+
   // input es el que se usa para recibir parametros desde el padre, pero en este caso recibimos el :id de la ruta (tienen que coincidir en nombre)
   // recordar que es un signal, se llama como funncion ()
   id = input.required<string>();
-  router = inject(Router)
-  petService = inject(PetService);
-  adoptionService = inject(AdoptionService);
   pet = signal<PetDTO | null>(null);
   petFormatted = computed(() => {
     return {...this.pet(), 
@@ -45,6 +49,11 @@ export class PetInfo implements OnInit {
   }
 
   initiateAdoption() {
+
+    if (!this.auth.isLogged()) {
+      this.router.navigate(["login"],{queryParams: {error : "Para poder iniciar una adopcion tienes que iniciar sesion"}});
+      return;
+    }
     
     this.adoptionService.iniciateAdoption(Number(this.id())).subscribe({
       next: (data) => {
@@ -52,7 +61,7 @@ export class PetInfo implements OnInit {
         this.router.navigate(["adoptions","pending"]);
       },
       error: (err) => {
-        alert("No se ha podido iniciar la adopcion: " + err.error.message);
+        this.errorMessage.set("No se ha podido iniciar la adopcion: " + err.error.message);
       }
     });
   }

@@ -155,7 +155,7 @@ public class UserService {
 
         userRepository.save(user);
         String token = jwtService.generateToken(new AuthenticationDTO(user.getEmail(), user.getRole()));
-        return new LoginResponseDTO(user.getId(), user.getUsername(), token);
+        return new LoginResponseDTO(user.getId(), user.getUsername(), user.getEmail() ,token);
     }
 /* 
 
