@@ -35,6 +35,7 @@ export class PetInfo implements OnInit {
   imageRoute = computed<string>(() => {
     return this.petFormatted().imagePath ? `${environment.api}/image/${this.petFormatted().imagePath}` : '/images/default_photo.png'
   });
+  isOwner = computed(() => this.pet()?.ownerId === this.auth.loadUser()?.id);
 
   ngOnInit() {
 

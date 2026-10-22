@@ -1,0 +1,22 @@
+<div class="card">
+
+    <div class="card-header">
+        <h1>Casa: <span class="header-data">{{fosterHome().name}}</span></h1>
+        <h2>Provincia: <span class="header-data">{{provinceFormated()}} </span>- Capacidad: <span class="header-data">{{fosterHome().capacity}} mascotas </span></h2>
+    </div>
+
+    @for (pet of fosterHome().pets ; track pet.id) {
+        <div class="card-item">
+            <app-pet-card [pet]="pet" class="item-pet"/>
+            <div class="item-buttons">
+                <!-- Le pongo el ! porque es un atributo opcional, asi le indico a angular que se que no va a ser null ni undefined-->
+                <button class="edit" (click)="editPet.emit(pet.id!)">Editar</button>
+                <button class="delete" (click)="deltePet.emit(pet.id!)">Eliminar</button>
+            </div>
+        </div>
+    }
+    <div class="card-buttons">
+        <button class="add" (click)=TENEMSO QEU REDIRIGIAR A UNA PAGINA DE EDICION>Añadir mascota</button>
+        <button class="delete" (click)="deleteFosterHome.emit(fosterHome().id!)">Borrar hogar</button>
+    </div>
+</div>

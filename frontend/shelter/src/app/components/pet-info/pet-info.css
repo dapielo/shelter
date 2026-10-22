@@ -47,7 +47,7 @@
 .aditional-info {
     width: 760px;
     padding: 20px;
-    margin-top: 20px;
+    margin: 20px 0px;
     display: flex;
     flex-direction: column;
     justify-self: center;

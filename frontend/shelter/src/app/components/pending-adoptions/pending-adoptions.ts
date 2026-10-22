@@ -2,6 +2,9 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { AdoptionDTO } from '../../model/AdoptionDTO';
 import { AdoptionService } from '../../services/adoption-service';
 import { AdoptionGrid } from '../adoption-grid/adoption-grid';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../../services/auth-service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pending-adoptions',
@@ -11,7 +14,9 @@ import { AdoptionGrid } from '../adoption-grid/adoption-grid';
 })
 export class PendingAdoptions implements OnInit{
 
+  auth = inject(AuthService);
   adoptionService = inject(AdoptionService);
+  router = inject(Router);
 
   adoptionsAsOwner = signal<AdoptionDTO[]>([]);
   adoptionsAsAdopter = signal<AdoptionDTO[]>([]);
@@ -30,9 +35,13 @@ export class PendingAdoptions implements OnInit{
         this.adoptionsAsOwner.set([...data]);
         this.errorMessage.set('');
       },
-      error: (err) => {
-        this.errorMessage.set(err.error.message);
-        this.message.set('');
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 403) {
+          this.auth.logout();
+          this.router.navigate(["login"]);
+        } else {
+          this.errorMessage.set(err.error.message);
+        }
       }
     });
 
@@ -41,9 +50,11 @@ export class PendingAdoptions implements OnInit{
         this.adoptionsAsAdopter.set([...data]);
         this.errorMessage.set('');
       },
-      error: (err) => {
-        this.errorMessage.set(err.error.message);
-        this.message.set('');
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 403) {
+          this.auth.logout();
+          this.router.navigate(["login"]);
+        }
       }
     });
   }
@@ -57,9 +68,16 @@ export class PendingAdoptions implements OnInit{
         // refrescamos los datos
         this.loadData();
       },
-      error: err => {
-        this.errorMessage.set(err.error.message)
-        this.message.set('');
+      error: (err:HttpErrorResponse) => {
+        if (err.status === 0) {
+          this.message.set('');
+          this.errorMessage.set('Error de conexion, vuelvelo a intentar más tarde');
+        } else {
+          this.auth.logout();
+          this.message.set('');
+          this.errorMessage.set(err.error.message)
+          this.router.navigate(["login"]);
+        }
       }
     }); 
   }
@@ -72,9 +90,16 @@ export class PendingAdoptions implements OnInit{
         // refrescamos los datos
         this.loadData();
       },
-      error: err => {
-        this.errorMessage.set(err.error.message)
-        this.message.set('');
+      error: (err:HttpErrorResponse) => {
+        if (err.status === 0) {
+          this.message.set('');
+          this.errorMessage.set('Error de conexion, vuelvelo a intentar más tarde');
+        } else {
+          this.auth.logout();
+          this.message.set('');
+          this.errorMessage.set(err.error.message)
+          this.router.navigate(["login"]);
+        }
       }
     });
     
@@ -88,9 +113,16 @@ export class PendingAdoptions implements OnInit{
         // refrescamos los datos
         this.loadData();
       },
-      error: err => {
-        this.errorMessage.set(err.error.message);
-        this.message.set('');
+      error: (err:HttpErrorResponse) => {
+        if (err.status === 0) {
+          this.message.set('');
+          this.errorMessage.set('Error de conexion, vuelvelo a intentar más tarde');
+        } else {
+          this.auth.logout();
+          this.message.set('');
+          this.errorMessage.set(err.error.message)
+          this.router.navigate(["login"]);
+        }
       }
     });
     

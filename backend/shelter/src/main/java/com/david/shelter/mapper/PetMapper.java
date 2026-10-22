@@ -31,6 +31,7 @@ public class PetMapper {
 
         return new PetDTO(
             pet.getId(), 
+            pet.getFosterHome().getUser().getId(),
             pet.getName(), 
             pet.getSpecies(), 
             pet.getBreed(), 

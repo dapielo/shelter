@@ -1,8 +1,10 @@
 package com.david.shelter.exception;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -211,4 +213,30 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
     }
+
+    // Este error me salio una vez porque por error cerre el contenedor de la base de datos mientras estaba haciendo pruebas
+    @ExceptionHandler (DataAccessException.class)
+    public ResponseEntity<ExceptionBody> handleDataAccess(DataAccessException e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            503,
+            "El servicio no está disponible en este momento, inténtalo más tarde",
+            request.getDescription(false)
+        );
+
+        return new ResponseEntity<>(body, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    // Errores que puedan salir y que no son capturados en las anteriores
+    @ExceptionHandler (Exception.class)
+    public ResponseEntity<ExceptionBody> handleGeneric(Exception e, WebRequest request) {
+
+        ExceptionBody body = new ExceptionBody(
+            500,
+            "Ha ocurrido un error inesperado",
+            request.getDescription(false)
+        );
+
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+}
 }

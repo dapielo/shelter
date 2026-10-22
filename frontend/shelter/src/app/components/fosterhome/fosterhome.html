@@ -1,0 +1,14 @@
+<div class="body">
+    <div class="error"> {{errorMessage()}} </div>
+
+    @for(fosterHome of fosterHomes() ; track fosterHome.id) {
+
+    <div class="card">
+        <app-fosterhome-card [fosterHome]="fosterHome" class="card-item"
+            (editPet)="onEdit($event)"
+            (deltePet)="onDeletePet($event)"
+            (deleteFosterHome)="onDeleteFosterHome($event)"></app-fosterhome-card>
+    </div>
+    }
+    
+</div>

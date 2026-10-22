@@ -1,9 +1,15 @@
 <div class="pet-name">
     <h1> {{petFormatted().name?.toUpperCase()}} </h1>
 </div>
+
+<div class="error" [class.visible]="errorMessage()">
+    {{errorMessage()}}
+</div>
+
 <div class="pet-image">
     <img [src]="imageRoute()" alt="Imagen de la mascota">
 </div>
+
 <div class="pet-info">
     <div class="info-item">
         <span class="item-decorated">Nombre: </span><span class="item-specific">{{petFormatted().name}} </span>
@@ -24,6 +30,7 @@
         <span class="item-decorated">Estado: </span><span class="item-specific">{{petFormatted().status == 'AVAILABLE' ? 'Esperando hogar' : 'Adoptado'}} </span>
     </div>
 </div>
+
 @if(petFormatted().info) {
     
     <div class="aditional-info">
@@ -36,11 +43,7 @@
     </div>
 }
 
-<div class="error" [class.visible]="errorMessage()">
-    {{errorMessage()}}
-</div>
-
-@if (petFormatted().status === 'AVAILABLE') {
+@if (!isOwner() && petFormatted().status === 'AVAILABLE') {
 
     <div class="adoption-button" (click)="initiateAdoption()">
         SOLICITAR ADOPCION
