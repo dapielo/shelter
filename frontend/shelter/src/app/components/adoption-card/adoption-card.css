@@ -44,10 +44,9 @@
     height: 40px;
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    background-color: var(--color-button-accent);
+    transition: 0.5s;
 }
 .buttons button:hover {
-    background-color: rgba(252, 217, 162, 0.629);
     cursor: pointer;
 }
 .item-data{
@@ -55,4 +54,28 @@
 }
 .item-field{
     font-weight: 600;
+}
+.button-accept{
+    background-color: var(--color-background);
+    color: var(--color-green-text);
+}
+.button-decline{
+    background-color: var(--color-background);
+    color: var(--color-red-text)
+}
+.button-abort{
+    background-color: var(--color-background);
+    color: var(--color-blue-text);
+}
+.button-accept:hover{
+    background-color: var(--color-green);
+    color: white;
+}
+.button-decline:hover{
+    background-color: var(--color-red);
+    color:white;
+}
+.button-abort:hover{
+    background-color: var(--color-blue);
+    color:white;
 }

@@ -3,13 +3,25 @@
     --text-color: rgb(76, 47, 11);
     --background-color: rgb(253, 251, 247);
     --color-shadow: rgb(158, 143, 117);
+    --color-outline: rgb(146, 119, 101);
     --color-input-outline: rgb(182, 172, 150);
-    --color-button: rgb(252, 250, 247);
-    --color-button-accent: rgb(249, 241, 230);
+    --color-button: rgb(255, 242, 222);
+    --color-button-accent: rgb(255, 226, 183);
     --color-shadow: rgb(127, 104, 64);
     --color-box-shadow: rgba(97, 80, 50, 0.6);
-    --color-error-message: rgb(198, 77, 7);
+    --color-error-message: rgb(174, 107, 82);
     --text-grey: rgb(62, 61, 61);
+
+    /*Botones*/
+    --color-red:rgb(188, 105, 105);
+    --color-blue:rgb(98, 129, 157);
+    --color-green-text:rgb(9, 124, 9);
+    --color-red-text:rgb(156, 57, 57);
+    --color-blue-text: rgb(53, 108, 157);
+    --color-green:rgb(117, 149, 117);
+}
+html {
+    scrollbar-gutter: stable;
 }
 body{
     margin: 0 auto;
@@ -17,13 +29,10 @@ body{
     background-color: var(--background-color);
     color: var(--text-color);
 }
-@keyframes pop {
-    to {
-        transform: translate(-5px,-5px) scale(1.01);
-        box-shadow: 3px 3px 3px var(--color-box-shadow);
-        
-    }
+*:focus {
+    outline: 1px solid var(--color-outline);
 }
+
 @keyframes focus {
     from {
         opacity: 0;
@@ -65,3 +74,4 @@ body{
         box-shadow: none;
     }
 }
+

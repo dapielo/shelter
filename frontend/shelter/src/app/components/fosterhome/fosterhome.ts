@@ -6,10 +6,11 @@ import { FosterHomeDTO } from '../../model/FosterHomeDTO';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FosterhomeCard } from '../fosterhome-card/fosterhome-card';
 import { PetService } from '../../services/pet-service';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-fosterhome',
-  imports: [FosterhomeCard],
+  imports: [FosterhomeCard, ReactiveFormsModule],
   templateUrl: './fosterhome.html',
   styleUrl: './fosterhome.css',
 })
@@ -22,6 +23,33 @@ export class Fosterhome implements OnInit{
 
   fosterHomes = signal<FosterHomeDTO[]>([]);
   errorMessage = signal<string>('');
+
+  fosterHomeForm : FormGroup = new FormGroup({
+
+    name: new FormControl('',Validators.required),
+
+    capacity: new FormControl(1,[
+      Validators.required,
+      Validators.min(1)
+    ])
+  })
+
+  ngOnInit() {
+
+    this.fosterHomeService.getFosterHomes().subscribe({
+      next: data => {
+        this.fosterHomes.set([...data]);
+      },
+      error: (err:HttpErrorResponse) => {
+        if (err.status === 403) {
+          this.auth.logout;
+          this.router.navigate(["login"]);
+        } else {
+          this.errorMessage.set(err.error.message)
+        }
+      }
+    });
+  }
 
   // capturamos los eventos con el valor que emiten lso outputs de los botones de las tarjetas
   onEdit (petId: number) {
@@ -62,21 +90,12 @@ export class Fosterhome implements OnInit{
     }
   }
 
-  ngOnInit() {
+  // Pequeño formulario de creacion de casas de acogida
+  onCreateFosterHome() {
 
-    this.fosterHomeService.getFosterHomes().subscribe({
-      next: data => {
-        this.fosterHomes.set([...data]);
-      },
-      error: (err:HttpErrorResponse) => {
-        if (err.status === 403) {
-          this.auth.logout;
-          this.router.navigate(["login"]);
-        } else {
-          this.errorMessage.set(err.error.message)
-        }
-      }
-    });
+    if (!this.fosterHomeForm.valid) {
+    //  SEGUIR CON LA LOGICA DE VALIDACION Y CREACION DE FOSTER HOME
+    }
   }
 
 }

@@ -1,9 +1,11 @@
 :host {
-    --color-nav-hover: rgb(249, 240, 218);
+    /* --color-nav-hover: rgb(249, 240, 218); */
+    --color-nav-hover: rgb(240, 200, 160);
     --gris: rgb(64, 64, 64);
-    --color-nav: rgb(255, 255, 255);
+    /* --color-nav: rgb(255, 255, 255); */
+    --color-nav: rgb(252, 242, 233);
     --color-text: rgb(76, 47, 11);
-    --color-nav-shadow: rgb(230, 230, 230);
+    --color-nav-shadow: rgb(217, 186, 154);
     --color-nav-element-border: rgb(58, 80, 56);
     font-family: Arial, sans-serif;
     font-size: 1rem;
@@ -20,6 +22,10 @@
     justify-content: space-between;
     align-items: center;
     height: 50px;
+    width: 99%;
+    justify-self: center;
+    border-radius: 10px;
+    margin-top: 10px;
 }
 .navbar-bar{
     display: flex;
@@ -36,10 +42,11 @@
     padding: 0px 20px;
     border: 1px solid transparent;
     border-radius: 10px;
+    transition: 500ms;
+
 }
 .navbar-bar a:hover {
     background-color: var(--color-nav-hover);
-    transition: 500ms;
 }
 .navbar-bar img {
     max-width: 40px;
@@ -50,17 +57,19 @@
     align-items: center;
     justify-content: center;
     margin-right: 40px;
+    width: 200px;
 }
 .user-bar img {
-    max-height: 60px;
+    height: 40px;
+    width: 40px;
+    padding: 5px;
     cursor: pointer;
+    transition: 800ms;
 }
 .user-bar img:hover {
     background-color: var(--color-nav-hover);
     border-radius: 5px;
-    transition: 800ms;
 }
-
 .user-bar a {
     display: flex;
 }

@@ -31,6 +31,6 @@ export class PetCard {
     });
 
     toPetInfo() {
-      this.router.navigate(["/pet",`${this.pet().id}`]);
+      this.router.navigate(["/pet","info",`${this.pet().id}`]);
     }
 }

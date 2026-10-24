@@ -1,0 +1,55 @@
+<h1>BUSCADOR DE MASCOTAS</h1>
+
+
+<div class="form">
+
+    <div class="errorMessage" [class.visible]="errorMessage()"> {{errorMessage()}} </div>
+
+    <form action="" [formGroup]="searchForm" (submit)="onSubmit()">
+
+        <div class="form-item">
+            <label for=""province>Provincia:</label>
+            <select name="province" id="province" formControlName="province">
+                <option value="" selected>selecciona una provincia...</option>
+                @for (p of provinces ; track p.value) {
+                    <option [value]="p.value"> {{p.label}} </option>
+                }
+            </select>
+        </div>
+
+        <div class="form-item">
+            <label for="species">Especie</label>
+            <select name="species" id="species" formControlName="species">
+                <option value="" selected>selecciona una especie...</option>
+                @for (s of speciesList ; track s.value) {
+                    <option [value]="s.value"> {{s.label}} </option>
+                }
+            </select>
+            
+        </div>
+
+        <div class="form-item">
+            <label for="ageGroup">Grupo de edad:</label>
+            <select name="ageGroup" id="ageGroup" formControlName="ageGroup">
+                <option value="">selecciona un grupo de edad...</option>
+                @for (age of ageGroups ; track age.value) {
+                    <option [value]="age.value"> {{age.label}} </option>
+                }
+            </select>
+        </div>
+
+    </form>
+
+    <div class="buttons">
+        <button (click)="onSubmit()">Buscar</button>
+    </div>
+
+</div>
+
+<div class="results">
+    @if (pets().length !== 0) {
+        <app-pet-grid [pets]="pets()"></app-pet-grid>
+    } @else {
+        <h2>{{message()}}</h2>
+    }
+</div>

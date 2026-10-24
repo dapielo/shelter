@@ -12,3 +12,28 @@
     }
     
 </div>
+
+<div class="form">
+
+    <h2>Añadir hogar de acogida</h2>
+
+    <form action="" [formGroup]="fosterHomeForm">
+
+        <div class="form-item">
+            <label for="name">Nombre:</label>
+            <input type="text" name="name" id="name" formControlName="name">
+        </div>
+
+        <div class="form-item">
+            <label for="capacity">Capacidad:</label>
+            <input type="number" name="capacity" id="capacity" formControlName="capacity">
+        </div>
+
+        <div class="body-buttons">
+            <button (click)="onCreateFosterHome()">Añadir Hogar</button>
+        </div>
+
+    </form>
+
+
+</div>

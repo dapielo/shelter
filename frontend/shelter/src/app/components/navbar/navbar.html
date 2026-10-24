@@ -2,7 +2,7 @@
     <div class="navbar-bar">
         <a routerLink="/"><img src="images/shelter_icon.png" alt="Shelter"></a>
         <a routerLink="/">Inicio</a>
-        <a routerLink="/search">Buscador</a>
+        <a routerLink="/pet/search">Buscador</a>
         <!-- los corchetes se usan cuando queremos acceder al ts para meter logica en la plantilla -->
         <a [routerLink]="authService.isLogged() ? '/adoption/pending' : '/login'">Adopciones Pendientes</a>
         <a [routerLink]="authService.isLogged() ? '/adoption/history' : '/login'">Historial</a>

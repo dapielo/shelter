@@ -6,7 +6,7 @@
     box-sizing: border-box;
 }
 .banner {
-    max-width: 100%;
+    width: 100%;
     animation: focus 1.2s ease-out both;
 }
 h1 {
@@ -50,7 +50,7 @@ h3 {
 .filter-catdog{
     background-color: white;
     width: 50%;
-    border: 1px solid black;
+    border: 1px solid var(--color-outline);
     border-radius: 10px;
     height: 300px;
 }

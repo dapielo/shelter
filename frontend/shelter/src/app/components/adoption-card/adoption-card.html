@@ -26,10 +26,10 @@
         <div class="info-item buttons">
                 
             @if (isOwner()) {
-                <button (click)="acceptAdoption.emit(adoption().id)">Aceptar</button>
-                <button (click)="declineAdoption.emit(adoption().id)">Rechazar</button>
+                <button class="button-accept" (click)="acceptAdoption.emit(adoption().id)">Aceptar</button>
+                <button class="button-decline" (click)="declineAdoption.emit(adoption().id)">Rechazar</button>
             } @else {
-                <button (click)="deleteAdoption.emit(adoption().petId)">Abortar</button>
+                <button class="button-abort" (click)="deleteAdoption.emit(adoption().petId)">Abortar</button>
             }
         </div>
     </div>

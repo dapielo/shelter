@@ -1,0 +1,66 @@
+h1 {
+    text-align:center ;
+    margin: 80px 0px;
+}
+.form {
+    width: 80%;
+    border-radius: 10px;
+    border: 1px solid var(--color-outline);
+    justify-self: center;
+    padding-top: 30px;
+}
+.form form {
+    display: flex;
+    justify-content: space-evenly;
+    border: 1px solid var()
+}
+.form-item {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-size: 1.5rem;
+}
+select {
+    height: 30px;
+    border-radius: 5px;
+    border: 1px solid var(--color-outline);
+    background-color: white;
+}
+select:hover {
+    background-color: white;
+}
+.buttons {
+    justify-self: center;
+    margin: 40px;
+}
+.buttons button {
+    transition: 0.5s;
+    border-radius: 10px;
+    border: 1px solid var(--color-outline);
+    background-color: var(--color-button);
+    width: 120px;
+    height: 40px;
+}
+.buttons button:hover {
+    background-color: var(--color-button-accent);
+}
+.results {
+    width: 80%;
+    margin-top: 20px;
+    justify-self: center;
+    border:1px solid var(--color-outline);
+    border-radius: 10px;
+}
+.results h2 {
+    text-align: center;
+}
+.errorMessage {
+    color: var(--color-error-message);
+    font-weight: 600;
+    margin-bottom:30px;
+    min-height: 30px;
+    justify-self: center;
+}
+.visible {
+    animation: 1s float ease ;
+}

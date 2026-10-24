@@ -1,9 +1,8 @@
 :host {
-    --border-color: rgb(99, 79, 39);
     --background-color: rgb(252, 251, 247);
 }
 .card {
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--color-outline);
     border-radius: 10px;
     display: flex;
     justify-content: left;

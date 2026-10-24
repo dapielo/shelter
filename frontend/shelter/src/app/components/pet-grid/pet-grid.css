@@ -11,8 +11,10 @@
     border-radius: 10px;
 }
 .grid-card:hover{
-    animation: pop .5s both;
+    transform: translate(-5px, -5px) scale(1.01);
+    box-shadow: 3px 3px 3px var(--color-box-shadow);
 }
 .grid-card{
+    transition: transform 0.5s, box-shadow 0.5s;
     border-radius: 10px;
 }

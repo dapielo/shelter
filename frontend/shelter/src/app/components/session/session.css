@@ -15,3 +15,11 @@ a {
     padding: 7px 20px;
     border-radius: 8px;
 }
+p {
+    font-size: 1rem;
+    margin-right: 30px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+p span {
+    font-weight: 600;
+}

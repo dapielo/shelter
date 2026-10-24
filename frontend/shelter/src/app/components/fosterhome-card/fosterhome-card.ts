@@ -2,10 +2,11 @@ import { Component, computed, input, output } from '@angular/core';
 import { FosterHomeDTO } from '../../model/FosterHomeDTO';
 import { ProvinceLabel } from '../../model/ProvinceLabel';
 import { PetCard } from '../pet-card/pet-card';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-fosterhome-card',
-  imports: [PetCard],
+  imports: [PetCard, RouterLink],
   templateUrl: './fosterhome-card.html',
   styleUrl: './fosterhome-card.css',
 })

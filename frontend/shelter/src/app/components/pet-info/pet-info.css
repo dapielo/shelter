@@ -1,5 +1,6 @@
 :host{
     font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    --color-backgroun: rgb(255, 244, 231);
 }
 .pet-image{
     display: flex;
@@ -29,7 +30,7 @@
     justify-items: start;
     gap: 60px;
     font-size: 1.2rem;
-    background-color: var(--color-button-accent);
+    background-color: var(--color-backgroun)
 }
 .info-item {
     display: flex;
@@ -54,7 +55,7 @@
     border: 1px solid var(--color-shadow);
     border-radius: 10px;
     font-size: 1.2rem;
-    background-color: var(--color-button-accent);
+    background-color: var(--color-backgroun);
 
 }
 .title{
