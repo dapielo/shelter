@@ -7,6 +7,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FosterhomeCard } from '../fosterhome-card/fosterhome-card';
 import { PetService } from '../../services/pet-service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ProvinceLabel } from '../../model/ProvinceLabel';
 
 @Component({
   selector: 'app-fosterhome',
@@ -24,6 +25,8 @@ export class Fosterhome implements OnInit{
   fosterHomes = signal<FosterHomeDTO[]>([]);
   errorMessage = signal<string>('');
 
+  provinceSelect = Object.entries(ProvinceLabel).map(([v, l]) => ({value:v,label:l}));
+
   fosterHomeForm : FormGroup = new FormGroup({
 
     name: new FormControl('',Validators.required),
@@ -31,7 +34,9 @@ export class Fosterhome implements OnInit{
     capacity: new FormControl(1,[
       Validators.required,
       Validators.min(1)
-    ])
+    ]),
+
+    province: new FormControl('',Validators.required)
   })
 
   ngOnInit() {
@@ -78,7 +83,7 @@ export class Fosterhome implements OnInit{
     if (confirm("Seguro que quieres borrar el hogar? Se perderan las publicaciones de todas sus mascotas")) {
 
       this.fosterHomeService.deleteFosterHome(fosterHomeId).subscribe({
-        next: () => { this.router.navigate(["fosterhome"]) },
+        next: () => { this.fosterHomes.set(this.fosterHomes().filter(f => f.id !== fosterHomeId)) },
         error: (err: HttpErrorResponse) => {
           if (err.status === 0) {
             this.errorMessage.set("Error de conexion, vuelvelo a intentar");
@@ -94,8 +99,23 @@ export class Fosterhome implements OnInit{
   onCreateFosterHome() {
 
     if (!this.fosterHomeForm.valid) {
-    //  SEGUIR CON LA LOGICA DE VALIDACION Y CREACION DE FOSTER HOME
+      this.errorMessage.set("Los datos del hogar no son correctos");
+      return;
     }
+    this.errorMessage.set('');
+
+    this.fosterHomeService.createFosterHome(this.fosterHomeForm.getRawValue()).subscribe({
+      next: (data: FosterHomeDTO) => {
+        this.fosterHomes.update(list => [...list,data]);
+      },
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 0) {
+          this.errorMessage.set('Error de conexion, revisa si tienes internet');
+        } else {
+          this.errorMessage.set(err.error.message);
+        }
+      }
+    })
   }
 
 }

@@ -53,10 +53,13 @@ h3 {
     border: 1px solid var(--color-outline);
     border-radius: 10px;
     height: 300px;
+    transition: transform 0.5s, box-shadow 0.5s;
+
 }
 .filter-catdog:hover {
-    animation: pop 1s;
     cursor: pointer;
+    transform: translate(-5px,-5px);
+    box-shadow: 5px 5px 5px var(--color-box-shadow);
 }
 .filter-catdog img {
     width: 100%;

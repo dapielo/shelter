@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card" (click)="openPetCard()">
     <img [src]="image()" alt="Foto mascota">
 
     <div class="card-info">
@@ -24,12 +24,12 @@
         </div>
 
         <div class="info-item buttons">
-                
+            <!-- En los botones, he tenido que añadir el $event.stopPropagation porque sino los botones tambien te llevaban a la tarjeta de mascota.-->
             @if (isOwner()) {
-                <button class="button-accept" (click)="acceptAdoption.emit(adoption().id)">Aceptar</button>
-                <button class="button-decline" (click)="declineAdoption.emit(adoption().id)">Rechazar</button>
+                <button class="button-accept" (click)="acceptAdoption.emit(adoption().id) ; $event.stopPropagation()">Aceptar</button>
+                <button class="button-decline" (click)="declineAdoption.emit(adoption().id) ; $event.stopPropagation()">Rechazar</button>
             } @else {
-                <button class="button-abort" (click)="deleteAdoption.emit(adoption().petId)">Abortar</button>
+                <button class="button-abort" (click)="deleteAdoption.emit(adoption().petId) ; $event.stopPropagation()">Abortar</button>
             }
         </div>
     </div>

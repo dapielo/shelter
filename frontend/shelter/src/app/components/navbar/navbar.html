@@ -4,7 +4,7 @@
         <a routerLink="/">Inicio</a>
         <a routerLink="/pet/search">Buscador</a>
         <!-- los corchetes se usan cuando queremos acceder al ts para meter logica en la plantilla -->
-        <a [routerLink]="authService.isLogged() ? '/adoption/pending' : '/login'">Adopciones Pendientes</a>
+        <a [routerLink]="authService.isLogged() ? '/adoption/pending' : '/login'">Adopciones</a>
         <a [routerLink]="authService.isLogged() ? '/adoption/history' : '/login'">Historial</a>
         <a [routerLink]="authService.isLogged() ? '/fosterhome' : '/login'">Mis hogares</a>
     </div>

@@ -1,10 +1,10 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { PetDTO } from '../../model/PetDTO';
 import { AdoptionDTO } from '../../model/AdoptionDTO';
 import { SpeciesLabel } from '../../model/SpeciesLabels';
 import { AgeGroupLabel } from '../../model/AgeGroupLabel';
 import { environment } from '../../../environments/environment.development';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AdoptionStatusLabel } from '../../model/AdoptionStatusLabel';
 
 @Component({
@@ -31,4 +31,9 @@ export class AdoptionCard {
   acceptAdoption = output<number>();
   declineAdoption = output<number>();
   deleteAdoption = output<number>();
+
+  router = inject(Router);
+  openPetCard() {
+    this.router.navigate(["pet","info",this.adoption().petId]);
+  }
 }

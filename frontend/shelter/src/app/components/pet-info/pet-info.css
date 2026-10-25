@@ -9,6 +9,9 @@
 .pet-image img {
     border-radius: 20px;
     width: 800px;
+    height: 450px;
+    object-fit: cover;
+    object-position: center;
 }
 .pet-name{
     margin: 40px 0;
@@ -23,7 +26,7 @@
     border-radius: 10px;
     width: 760px; /*760 porque tenemos 20 + 20 de padding y quiero que cuadre con la foto*/
     font-weight: 600;
-    margin-top: 60px;
+    margin-top: 20px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     justify-self: center;
