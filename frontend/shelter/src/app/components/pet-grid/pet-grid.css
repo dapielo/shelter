@@ -2,6 +2,7 @@
     --color-background: rgb(252, 251, 247);
 }
 .grid {
+    margin-inline: auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
     background-color: var(--color-background);

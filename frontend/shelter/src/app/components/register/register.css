@@ -16,6 +16,8 @@
     animation: float 0.5s ease forwards;
 }
 .form-container {
+    width: fit-content;
+    margin-inline: auto;
     display: flex;
     justify-self: center;
     margin-top: 20px;

@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Quattrocento:wght@400;700&display=swap');
 .body {
     justify-self: center;
+    margin: auto;
     width: 80%;
     box-sizing: border-box;
 }
@@ -10,6 +11,7 @@
     animation: focus 1.2s ease-out both;
 }
 h1 {
+    margin-inline: auto;
     font-family: 'Quattrocento', Arial, sans-serif;
     font-size: 3rem;
     text-align: center;
