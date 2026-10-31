@@ -4,7 +4,7 @@ import { PetService } from '../../services/pet-service';
 import { PetDTO } from '../../model/PetDTO';
 import { SpeciesLabel } from '../../model/SpeciesLabels';
 import { AgeGroupLabel } from '../../model/AgeGroupLabel';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { AdoptionService } from '../../services/adoption-service';
 import { AuthService } from '../../services/auth-service';
 

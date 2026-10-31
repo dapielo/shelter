@@ -2,8 +2,7 @@ import { Component, computed, inject, input, output } from '@angular/core';
 import { PetDTO } from '../../model/PetDTO';
 import { AdoptionDTO } from '../../model/AdoptionDTO';
 import { SpeciesLabel } from '../../model/SpeciesLabels';
-import { AgeGroupLabel } from '../../model/AgeGroupLabel';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { Router, RouterLink } from '@angular/router';
 import { AdoptionStatusLabel } from '../../model/AdoptionStatusLabel';
 

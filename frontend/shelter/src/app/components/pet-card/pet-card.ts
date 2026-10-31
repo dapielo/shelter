@@ -1,10 +1,9 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { PetService } from '../../services/pet-service';
 import { PetDTO } from '../../model/PetDTO';
 import { SpeciesLabel } from '../../model/SpeciesLabels';
 import { AgeGroupLabel } from '../../model/AgeGroupLabel';
 import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-pet-card',

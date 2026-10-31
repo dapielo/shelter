@@ -4,7 +4,7 @@ import { AuthService } from './auth-service';
 import { UserDTO } from '../model/UserDTO';
 import { UserUpdateDTO } from '../model/UserUpdateDTO';
 import { UserSession } from '../model/UserSession';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
