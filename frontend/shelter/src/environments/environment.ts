@@ -1,3 +1,4 @@
 export const environment = {
-    api: "http://127.0.0.1:8080/shelter"
+    // este es para produccion, usamos /shelter para que nginx rediriga al backend
+    api: "/shelter"
 };

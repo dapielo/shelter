@@ -4,6 +4,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { UserDTO } from '../model/UserDTO';
+import { environment } from '../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,7 @@ export class AuthService {
   // Injectamos el servicio httpClient
   private http = inject(HttpClient);
   // Definimos el endpoint
-  private api: string = "http://127.0.0.1:8080/shelter"
+  private api: string = environment.api;
 
   // lo definimos como signal para que avise a cualquier componente que usa este valor de si cambia
   public userSession = signal<UserSession | null> (this.loadUser());

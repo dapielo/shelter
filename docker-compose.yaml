@@ -1,0 +1,33 @@
+services:
+
+  shelter-db:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: shelter
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+    volumes:
+    # monta el archivo del mysqldump en esta carpeta de la imagen de mysql docker-entrypoint-initdb.d que carga los datos de los scripts que hay dentro al arrancar la imagen por primera vez
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db-data:/var/lib/mysql
+
+  shelter-backend:
+    build: ./backend/shelter
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://shelter-db:3306/shelter
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-root}
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      - shelter-db
+    restart: on-failure
+
+  shelter-frontend:
+    build: ./frontend/shelter
+    depends_on:
+      - shelter-backend
+    ports:
+      - "80:80"
+
+volumes:
+  db-data:
+  uploads:

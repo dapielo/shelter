@@ -56,7 +56,7 @@ public class SecurityConfig {
                 .requestMatchers("/shelter/user/**").authenticated()
                 .requestMatchers("/shelter/image/**").permitAll() // las imagenes las puede ver cualquiera 
                 .requestMatchers("/error").permitAll() // para posibles erroes que no esten capturados en el GlobalHandler, Spring redigira a este endpoint
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             );
 
         // Añadimos el filtro de JWT que hemos creado antes del filtro por defecto de UsernamePassword de Spring Security, que en esta API no se usa
