@@ -16,6 +16,7 @@
     z-index: 1;
 }
 .navbar {
+    margin-inline: auto;
     display: flex;
     background-color: var(--color-nav);
     box-shadow: 0px 0px 2px var(--color-nav-shadow);
