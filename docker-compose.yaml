@@ -9,6 +9,11 @@ services:
     # monta el archivo del mysqldump en esta carpeta de la imagen de mysql docker-entrypoint-initdb.d que carga los datos de los scripts que hay dentro al arrancar la imagen por primera vez
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
 
   shelter-backend:
     build: ./backend/shelter
@@ -18,16 +23,24 @@ services:
     volumes:
       - uploads:/app/uploads
     depends_on:
-      - shelter-db
+      shelter-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/8080'"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
     restart: on-failure
 
   shelter-frontend:
     build: ./frontend/shelter
     depends_on:
-      - shelter-backend
+      shelter-backend:
+        condition: service_healthy
     ports:
       - "80:80"
-
+    
 volumes:
   db-data:
   uploads:

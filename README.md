@@ -71,7 +71,7 @@ Para git seguir la guia oficial de git para mac:
 ```powershell
 git clone https://github.com/dapielo/shelter.git
 cd shelter
-docker compose up -d
+docker compose up -d --wait
 ```
 Una vez compile todo la web estará disponible para acceder desde el navegador en: [http://localhost](http://localhost). 
 Para probar una demo usar el usuario "david@shelter.com" con contraseña "david1234"
@@ -87,7 +87,7 @@ docker compose down
 ```bash
 git clone https://github.com/dapielo/shelter.git
 cd shelter
-sudo docker compose up -d
+sudo docker compose up -d --wait
 ```
 
 Para detener la ejecucion desde la misma terminal:
