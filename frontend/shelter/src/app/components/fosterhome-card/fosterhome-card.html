@@ -16,7 +16,8 @@
         </div>
     }
     <div class="card-buttons">
-        <button class="add" routerLink="pet/create">Añadir mascota</button>
+        <!-- Gracias a la feature withComponentInputBinding() que tnemos en app.config, podemos enviar el valor del id de la foster home y en la ruta destino lo capturamos con input-->
+        <button class="add" [routerLink]="['/fosterhome',fosterHome().id,'pet','create']">Añadir mascota</button>
         <button class="delete" (click)="deleteFosterHome.emit(fosterHome().id!)">Borrar hogar</button>
     </div>
 </div>

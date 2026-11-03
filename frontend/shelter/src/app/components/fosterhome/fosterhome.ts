@@ -47,7 +47,7 @@ export class Fosterhome implements OnInit{
       },
       error: (err:HttpErrorResponse) => {
         if (err.status === 403) {
-          this.auth.logout;
+          this.auth.logout();
           this.router.navigate(["login"]);
         } else {
           this.errorMessage.set(err.error.message)
@@ -61,12 +61,15 @@ export class Fosterhome implements OnInit{
     this.router.navigate([`pet/edit/:${petId}`]);
   }
 
-  onDeletePet(petId: number) {
+  onDeletePet(petId: number, fosterhomeId: number) {
 
     if (confirm("Seguro que quieres borrar?")) {
 
       this.petService.deletePet(petId).subscribe({
-        next: () => {this.router.navigate(["fosterhome"])},
+        next: () => {
+          // actualizamos las casas de acoida, de cada una de ellas, expandimos el objeto y reasignamos pets filtrando si tiene un pet con el id de la que borramos
+          this.fosterHomes.update(list => list.map(fosterHome => ({...fosterHome, pets: fosterHome.pets?.filter(p => p.id !== petId)})));
+        },
         error: (err: HttpErrorResponse) => {
           if (err.status === 0) {
             this.errorMessage.set("Error de conexion, vuelvelo a intentar");
