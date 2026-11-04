@@ -1,9 +1,10 @@
 <div class="grid">
     @for(adoption of adoptions() ; track adoption.id) {
-        <app-adoption-card [adoption]="adoption" [isOwner]="isOwner()" class="grid-card"
+        <app-adoption-card [adoption]="adoption" [buttonType]="buttonType()" class="grid-card"
             (acceptAdoption)="acceptAdoption.emit($event)"
             (declineAdoption)="declineAdoption.emit($event)"
             (deleteAdoption)="deleteAdoption.emit($event)"
+            [class]="adoption.status.toLocaleLowerCase()"
         />
     }
 </div>

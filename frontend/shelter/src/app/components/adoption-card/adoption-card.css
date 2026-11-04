@@ -9,7 +9,6 @@
     display: flex;
     justify-content: space-between;
     text-align: left;
-    background-color: var(--background-color);
     height: 130px;
     gap:20px;
 }
@@ -78,4 +77,11 @@
 .button-abort:hover{
     background-color: var(--color-blue);
     color:white;
+}
+/* las tarjetas tienen el estado como clase, lo uso para que en el historial las aceptadas tengan un color diferente que las rechazadas*/
+:host.accepted {
+    background-color: rgb(228, 248, 232);
+}
+:host.declined {
+    background-color: rgb(248, 229, 229);
 }

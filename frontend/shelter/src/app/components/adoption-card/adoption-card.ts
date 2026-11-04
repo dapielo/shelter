@@ -17,7 +17,7 @@ export class AdoptionCard {
   // La informacion de la adopcion y de la mascota nos la tiene que pasar el padre del componente
   adoption = input.required<AdoptionDTO>();
   // propiedad que le pasa el padre para saber si la mascota es suya o no (determina los botones)
-  isOwner = input.required<boolean>();
+  buttonType = input.required<string>();
   adoptionStatus = computed(() => AdoptionStatusLabel[this.adoption().status])
   species = computed(() => SpeciesLabel[this.adoption().species]);
 

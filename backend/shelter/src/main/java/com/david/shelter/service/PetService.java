@@ -96,7 +96,6 @@ public class PetService {
     public List<PetDTO> getVeterans() {
         return petRepository.findOldestRegistered().stream()
                     .map(PetMapper::toDTO)
-                    .filter(pet -> pet.status() == PetStatus.AVAILABLE)
                     .toList();
     }
 

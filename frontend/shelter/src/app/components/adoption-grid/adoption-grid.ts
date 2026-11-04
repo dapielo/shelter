@@ -16,7 +16,7 @@ export class AdoptionGrid {
   // listado de adopciones que recibe de su padre
   adoptions = input.required<AdoptionDTO[]>();
   // el padre indica tambien si es el listado como dueño o como adoptante
-  isOwner = input.required<boolean>();
+  buttonType = input.required<string>();
 
   // Este componente recibe datos de su hijo
   acceptAdoption = output<number>();

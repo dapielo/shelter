@@ -1,0 +1,9 @@
+h1 {
+    margin-inline: auto;
+    text-align: center;
+    margin-top: 80px;
+}
+.grid {
+    width: 70%;
+    margin-inline: auto;
+}

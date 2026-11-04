@@ -39,7 +39,10 @@ export class PendingAdoptions implements OnInit{
         if (err.status === 403) {
           this.auth.logout();
           this.router.navigate(["login"]);
-        } else {
+        } 
+        if (err.status === 0) {
+          this.errorMessage.set("Error de conexion, intentalo de nuevo mas tarde.")
+        }else {
           this.errorMessage.set(err.error.message);
         }
       }

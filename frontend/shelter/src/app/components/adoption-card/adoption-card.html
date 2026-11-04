@@ -25,12 +25,14 @@
 
         <div class="info-item buttons">
             <!-- En los botones, he tenido que añadir el $event.stopPropagation porque sino los botones tambien te llevaban a la tarjeta de mascota.-->
-            @if (isOwner()) {
+            @if (buttonType() == 'owner') {
                 <button class="button-accept" (click)="acceptAdoption.emit(adoption().id) ; $event.stopPropagation()">Aceptar</button>
                 <button class="button-decline" (click)="declineAdoption.emit(adoption().id) ; $event.stopPropagation()">Rechazar</button>
-            } @else {
+            }
+            @if (buttonType() == 'adopter') {
                 <button class="button-abort" (click)="deleteAdoption.emit(adoption().petId) ; $event.stopPropagation()">Abortar</button>
             }
+    
         </div>
     </div>
 
