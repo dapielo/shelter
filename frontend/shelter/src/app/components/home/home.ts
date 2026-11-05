@@ -1,11 +1,12 @@
 import { Component, inject, input, signal } from '@angular/core';
-import { PetGrid } from '../pet-grid/pet-grid';
-import { PetService } from '../../services/pet-service';
-import { PetDTO } from '../../model/PetDTO';
+import { PetService } from '../../pet/pet-service';
+import { PetDTO } from '../../pet/dto/PetDTO';
+import { RouterLink } from '@angular/router';
+import { PetGrid } from '../../pet/pet-grid/pet-grid';
 
 @Component({
   selector: 'app-home',
-  imports: [PetGrid],
+  imports: [PetGrid, RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -21,7 +22,7 @@ export class Home {
   ngOnInit() {
 
     // hacemos peticion de los datos al servidor
-    this.petService.getVeteranPets().subscribe({
+    this.petService.getAll().subscribe({
       next: (data) => {
         this.pets.set([...data]);
       },

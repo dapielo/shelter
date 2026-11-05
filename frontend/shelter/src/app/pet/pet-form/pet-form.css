@@ -1,0 +1,109 @@
+h1{
+    margin-inline: auto;
+    width: fit-content;
+    margin-top: 60px;
+}
+.error {
+    margin-top: 30px;
+    min-height: 20px;
+    display: flex;
+    justify-content: center;
+    color: var(--color-error-message);
+    font-weight: bold;
+    font-size: 20px;
+    height: 30px;
+    margin-bottom: 20px;
+}
+.visible {
+    animation: float 0.5s ease forwards;
+}
+.form form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px;
+    padding-bottom: 60px;
+    border: 1px solid var(--color-shadow);
+    border-radius: 10px;
+    width: 70%;
+    margin-inline: auto;
+}
+.form-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px 150px;
+}
+.group-item {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    align-items: center;
+}
+.group-item label {
+    margin-right: 10px;
+}
+form input, form select {
+    box-sizing: border-box;
+    height: 30px;
+}
+form label {
+    height: 20px;
+}
+textarea {
+    height: 70px;
+    max-width: 500px;
+}
+.form-buttons {
+    margin-inline: auto;
+    display: flex;
+    margin-top: 60px;
+    gap: 20px;
+}
+.form-buttons button {
+    height: 40px;
+    width: 120px;
+    border-radius: 5px;
+    border:1px solid var(--color-shadow);
+    color: var(--color-green-text);
+    background-color: var(--color-background);
+    transition: 0.5s;
+}
+.form-buttons button.green {
+    color: var(--color-green-text);
+    background-color: var(--color-background);
+}
+.form-buttons button.green:hover {
+    background-color: var(--color-green);
+    color: white;
+    cursor: pointer;
+}
+.form-buttons button.blue {
+    color: var(--color-blue-text);
+    background-color: var(--color-background);
+}
+.form-buttons button.blue:hover {
+    background-color: var(--color-blue);
+    color: white;
+    cursor: pointer;
+}
+.form-buttons button.red {
+    color: var(--color-red-text);
+    background-color: var(--color-background);
+}
+.form-buttons button.red:hover {
+    background-color: var(--color-red);
+    color: white;
+    cursor: pointer;
+}
+.item-image{
+    display: flex;
+    flex-direction: column;
+}
+.item-image img {
+    margin-top:20px;
+    width: 250px;
+    height: 120px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px;
+}
+

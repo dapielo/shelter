@@ -1,0 +1,20 @@
+<h1>Historial de adopciones</h1>
+
+@if (loading()) {
+    <h2>Cargando datos...</h2>
+} @else {
+
+    <div class="grid">
+        
+        @if (closedAdoptions()) {
+            <app-adoption-grid [adoptions]="closedAdoptions()" buttonType=""/>
+        } @else {
+            @if (errorMessage()) {
+                <div class="errorMessage"> {{errorMessage()}} </div>
+            } @else {
+                <h2>Nada que mostrar</h2>
+            }
+        }
+    </div>
+}
+

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.david.shelter.model.entity.FosterHome;
 import com.david.shelter.model.entity.Pet;
 import com.david.shelter.model.enums.Province;
+import com.david.shelter.model.enums.Species;
 
 @Repository 
 public interface PetRepository extends JpaRepository<Pet,Long>{
@@ -20,4 +21,8 @@ public interface PetRepository extends JpaRepository<Pet,Long>{
     // Buscamos lso 5 que tiene la fecha de registro mas antigua, es para una de las pantallas del front
     @Query ("SELECT p FROM Pet p WHERE p.status = 'AVAILABLE' ORDER BY p.registeredAt ASC, p.id ASC LIMIT 6")
     List<Pet> findOldestRegistered();
+
+    // Buscamos todos los disponibles por especie
+    @Query ("SELECT p FROM Pet p WHERE p.status = 'AVAILABLE' AND p.species = :species ORDER BY p.registeredAt ASC")
+    List<Pet> findOldestBySpecies(Species species);
 }

@@ -1,0 +1,37 @@
+import { Component, computed, inject, input, output } from '@angular/core';
+import { AdoptionDTO } from '../dto/AdoptionDTO';
+import { SpeciesLabel } from '../../pet/dto/SpeciesLabels';
+import { environment } from '../../../environments/environment';
+import { Router } from '@angular/router';
+import { AdoptionStatusLabel } from '../dto/AdoptionStatusLabel';
+
+@Component({
+  selector: 'app-adoption-card',
+  imports: [],
+  templateUrl: './adoption-card.html',
+  styleUrl: './adoption-card.css',
+})
+export class AdoptionCard {
+
+  // La informacion de la adopcion y de la mascota nos la tiene que pasar el padre del componente
+  adoption = input.required<AdoptionDTO>();
+  // propiedad que le pasa el padre para saber si la mascota es suya o no (determina los botones)
+  buttonType = input.required<string>();
+  adoptionStatus = computed(() => AdoptionStatusLabel[this.adoption().status])
+  species = computed(() => SpeciesLabel[this.adoption().species]);
+
+  image = computed(() => {
+    return this.adoption().imagePath ? `${environment.api}/image/${this.adoption().imagePath}` : 'images/default_photo.png';
+  });
+
+  // Estos datos son para enviar hacia arriba cuando un usuario acepta, rechaza o borra una adopcion. output crea un evento con el nombre
+  // de la variable que puede ser capturado en la plantilla padre de esta como (acceptAdoption)="..."
+  acceptAdoption = output<number>();
+  declineAdoption = output<number>();
+  deleteAdoption = output<number>();
+
+  router = inject(Router);
+  openPetCard() {
+    this.router.navigate(["pet","info",this.adoption().petId]);
+  }
+}

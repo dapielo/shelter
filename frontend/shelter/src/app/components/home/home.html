@@ -9,19 +9,19 @@
     <h3>Nuestros veteranos de shelter están esperando por alguien como tu.</h3>
 
     @if(pets()) {
-        <app-pet-grid [pets]="pets()"></app-pet-grid>
+        <app-pet-grid [pets]="pets().slice(0,6)"></app-pet-grid>
     } @else {
         <div>No se ha podido cargar la lista de veteranos.</div>
     }
 
     <div class="filter">
-        <div class="filter-catdog">
+        <div class="filter-catdog" routerLink="/pet/search" [queryParams]="{species: 'DOG'}">
             <p class="catdog-title">¿ Leal seguidor canino ?</p>
-            <img src="images/sketch-dog.png" alt="Imagen dibujaa de un perro.">
+            <img src="images/sketch-dog.png" alt="Imagen dibujada de un perro.">
         </div>
-        <div class="filter-catdog">
+        <div class="filter-catdog" routerLink="/pet/search" [queryParams]="{species: 'CAT'}">
             <p class="catdog-title">¿ Fiel adorador gatuno ?</p>
-            <img src="images/sketch-cat.png" alt="Imagen dibujada de un gato.">
+            <img src="images/sketch-cat.png" alt="Imagen dibujada de un gato." >
         </div>
     </div>
 </div>

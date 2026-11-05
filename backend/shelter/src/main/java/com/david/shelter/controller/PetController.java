@@ -58,14 +58,13 @@ public class PetController {
         return new ResponseEntity<>(body,HttpStatus.OK);
     }
 
-    @GetMapping("/veterans")
-    public ResponseEntity<List<PetDTO>> getVeterans() {
+    @GetMapping("/list")
+    public ResponseEntity<List<PetDTO>> getAll() {
         
-        List<PetDTO> body = petService.getVeterans();
+        List<PetDTO> body = petService.findAll();
         return new ResponseEntity<>(body,HttpStatus.OK);
     }
     
-
     // UPDATE
     // para borrar la imagen, es una actualizacion de la mascota
     @PreAuthorize ("isAuthenticated()")
@@ -93,4 +92,5 @@ public class PetController {
         petService.deletePet(id);
         return ResponseEntity.ok().build();
     }
+
 }

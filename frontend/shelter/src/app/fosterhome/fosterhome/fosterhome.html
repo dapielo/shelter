@@ -1,0 +1,57 @@
+@if (loading()) {
+    <h1>Cargando datos...</h1>
+
+} @else {
+    
+    <div class="body">
+        <div class="error" [class.visible]="errorMessage()"> {{errorMessage()}} </div>
+        
+        @for(fosterHome of fosterHomes() ; track fosterHome.id) {
+            
+            <div class="card">
+                <app-fosterhome-card [fosterHome]="fosterHome" class="card-item"
+                (deltePet)="onDeletePet($event, fosterHome.id!)"
+                (deleteFosterHome)="onDeleteFosterHome($event)"></app-fosterhome-card>
+            </div>
+        }
+        
+    </div>
+
+    @if (showAddForm()){
+    
+    <div class="form">
+    
+        <h2>Añadir hogar de acogida</h2>
+    
+        <form action="" [formGroup]="fosterHomeForm">
+    
+            <div class="form-item">
+                <label for="name">Nombre:</label>
+                <input type="text" name="name" id="name" formControlName="name">
+            </div>
+    
+            <div class="form-item">
+                <label for="capacity">Capacidad:</label>
+                <input type="number" name="capacity" id="capacity" formControlName="capacity">
+            </div>
+    
+            <div class="form-item">
+                <label for="province">Provincia:</label>
+                <select name="province" id="province" formControlName="province">
+                    <option value="">selecciona una provincia...</option>
+                    @for (p of provinceSelect ; track p.value) {
+                    <option [value]="p.value"> {{p.label}} </option>
+                    }
+                </select>
+            </div>
+    
+        </form>
+    
+        <div class="body-buttons">
+            <button (click)="onCreateFosterHome()">Añadir Hogar</button>
+        </div>
+    
+    </div>
+    }
+
+}

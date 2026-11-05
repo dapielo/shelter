@@ -93,8 +93,8 @@ public class PetService {
     }
 
     // Devolvemos los 5 que llevan mas tiempo sin adoptar
-    public List<PetDTO> getVeterans() {
-        return petRepository.findOldestRegistered().stream()
+    public List<PetDTO> findAll() {
+        return petRepository.findAll().stream()
                     .map(PetMapper::toDTO)
                     .toList();
     }

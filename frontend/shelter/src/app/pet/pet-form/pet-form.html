@@ -1,0 +1,65 @@
+<h1>Añadir mascota</h1>
+
+<div class="error" [class.visible]="errorMessage()"> {{errorMessage()}} </div>
+
+<div class="form">
+
+    <form action="" [formGroup]="petForm">
+
+        <div class="form-group">
+
+            <div class="group-item">
+                <label for="name">Nombre:</label>
+                <input type="text" name="name" id="name" formControlName="name">
+            </div>
+
+            <div class="group-item">
+                <label for="species">Especie: </label>
+                <select name="species" id="species" formControlName="species">
+                    <option value=""> Selecciona especie</option>
+                    @for (s of speciesLabels; track s.value) {
+                        <option [value]="s.value"> {{s.label}} </option>
+                    }
+                </select>
+            </div>
+
+            <div class="group-item">
+                <label for="breed">Raza:</label>
+                <input type="text" name="breed" id="breed" formControlName="breed">
+            </div>
+
+            <div class="group-item">
+                <label for="ageGroup">Grupo de edad: </label>
+                <select name="ageGroup" id="ageGroup" formControlName="ageGroup">
+                    <option value="">Selecciona grupo de edad</option>
+                    @for (ag of ageGroupLabels; track ag.value) {
+                        <option [value]="ag.value"> {{ag.label}} </option>
+                    }
+                </select>
+            </div>
+
+            <div class="group-item">
+                <label for="info">Información: </label>
+                <textarea name="info" id="info" formControlName="info"></textarea>
+            </div>
+
+            <div class="group-item item-image">
+                <input type="file" (change)="onImageSelected($event.target)">
+                @if (imageServerPath()) {
+                    <img [src]="imageServerPath()" alt="Imagen mascota">
+                }
+            </div>
+
+        </div>
+
+        <div class="form-buttons">
+            <button class="green" (click)="onSubmit()">Registrar</button>
+            @if (existentPet()) {
+                <button class="red" (click)="deleteImage()">Eliminar imagen</button>
+            }
+            <button class="blue" (click)="onReset()">Borrar Formulario</button>
+        </div>
+
+    </form>
+
+</div>

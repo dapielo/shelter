@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Session } from '../session/session';
-import { AuthService } from '../../services/auth-service';
+import { Session } from '../../user/session/session';
+import { AuthService } from '../../user/auth-service';
 
 @Component({
   selector: 'app-navbar',
