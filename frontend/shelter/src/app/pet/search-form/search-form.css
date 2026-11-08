@@ -35,17 +35,7 @@ select:hover {
     justify-self: center;
     margin: 40px auto;
 }
-.buttons button {
-    transition: 0.5s;
-    border-radius: 10px;
-    border: 1px solid var(--color-outline);
-    background-color: var(--color-button);
-    width: 120px;
-    height: 40px;
-}
-.buttons button:hover {
-    background-color: var(--color-button-accent);
-}
+
 .results {
     margin-inline: auto;
     width: 80%;

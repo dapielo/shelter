@@ -39,6 +39,7 @@ export class Login implements OnInit{
     const error = this.error() ?? null;
     if (error) {
       this.errorMessage.set(error);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
@@ -46,6 +47,7 @@ export class Login implements OnInit{
 
     if (!this.formLogin.valid) {
       this.errorMessage.set('El formulario tiene campos que no son validos');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     } 
 
@@ -66,6 +68,7 @@ export class Login implements OnInit{
       error: err => {
         // Este es el error del JSON que me envia el backend
         this.errorMessage.set(err.error.message);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
   }

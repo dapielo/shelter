@@ -4,7 +4,6 @@ import { AdoptionService } from '../adoption-service';
 import { AdoptionGrid } from '../adoption-grid/adoption-grid';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../user/auth-service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pending-adoptions',
@@ -16,7 +15,6 @@ export class PendingAdoptions implements OnInit{
 
   auth = inject(AuthService);
   adoptionService = inject(AdoptionService);
-  router = inject(Router);
 
   adoptionsAsOwner = signal<AdoptionDTO[]>([]);
   adoptionsAsAdopter = signal<AdoptionDTO[]>([]);
@@ -40,8 +38,7 @@ export class PendingAdoptions implements OnInit{
       },
       error: (err: HttpErrorResponse) => {
         if (err.status === 403) {
-          this.auth.logout();
-          this.router.navigate(["login"]);
+          this.auth.logout("/login");
         } 
         if (err.status === 0) {
           this.loadingOwner.set(false);
@@ -61,8 +58,7 @@ export class PendingAdoptions implements OnInit{
       },
       error: (err: HttpErrorResponse) => {
         if (err.status === 403) {
-          this.auth.logout();
-          this.router.navigate(["login"]);
+          this.auth.logout("/login");
         }
         if (err.status === 0) {
           this.loadingAdopter.set(false);
@@ -90,8 +86,7 @@ export class PendingAdoptions implements OnInit{
           this.errorMessage.set('Error de conexion, vuelvelo a intentar más tarde');
         } 
         if (err.status === 403) {
-          this.auth.logout();
-          this.router.navigate(["login"]);
+          this.auth.logout("/login");
         } else {
           this.message.set('');
           this.errorMessage.set(err.error.message)
@@ -114,8 +109,7 @@ export class PendingAdoptions implements OnInit{
           this.errorMessage.set('Error de conexion, vuelvelo a intentar más tarde');
         } 
         if (err.status === 403) {
-          this.auth.logout();
-          this.router.navigate(["login"]);
+          this.auth.logout("/login");
 
         } else {
           this.message.set('');
@@ -140,8 +134,7 @@ export class PendingAdoptions implements OnInit{
           this.errorMessage.set('Error de conexion, vuelvelo a intentar más tarde');
         } 
         if (err.status === 403) {
-          this.auth.logout();
-          this.router.navigate(["login"]);
+          this.auth.logout("/login");
 
         } else {
           this.message.set('');

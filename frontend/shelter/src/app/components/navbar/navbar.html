@@ -7,10 +7,11 @@
         <a [routerLink]="authService.isLogged() ? '/adoption/pending' : '/login'">Adopciones</a>
         <a [routerLink]="authService.isLogged() ? '/adoption/history' : '/login'">Historial</a>
         <a [routerLink]="authService.isLogged() ? '/fosterhome' : '/login'">Mis hogares</a>
+        <a [routerLink]="authService.isLogged() ? '/profile' : '/login'">Mi perfil</a>
     </div>
     <div class="user-bar">
         <app-session class="session"/>
-        <img src="images/search.png" alt="Buscar">
+        <img src="images/search.png" alt="Buscar" routerLink="/pet/search">
         @if(authService.isLogged()) {
             <img src="images/logout.png" alt="Cerrar sesion" (click)="authService.logout()">
         } @else {

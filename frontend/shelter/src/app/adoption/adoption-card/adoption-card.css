@@ -45,39 +45,13 @@
     border-radius: 10px;
     transition: 0.5s;
 }
-.buttons button:hover {
-    cursor: pointer;
-}
 .item-data{
     color: var(--text-grey);
 }
 .item-field{
     font-weight: 600;
 }
-.button-accept{
-    background-color: var(--color-background);
-    color: var(--color-green-text);
-}
-.button-decline{
-    background-color: var(--color-background);
-    color: var(--color-red-text)
-}
-.button-abort{
-    background-color: var(--color-background);
-    color: var(--color-blue-text);
-}
-.button-accept:hover{
-    background-color: var(--color-green);
-    color: white;
-}
-.button-decline:hover{
-    background-color: var(--color-red);
-    color:white;
-}
-.button-abort:hover{
-    background-color: var(--color-blue);
-    color:white;
-}
+
 /* las tarjetas tienen el estado como clase, lo uso para que en el historial las aceptadas tengan un color diferente que las rechazadas*/
 :host.accepted {
     background-color: rgb(234, 247, 237);

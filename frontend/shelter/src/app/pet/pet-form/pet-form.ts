@@ -75,8 +75,7 @@ export class PetForm implements OnInit{
             return;
           }
           if (err.status === 403) {
-            this.authService.logout();
-            this.router.navigate(["login"]);
+            this.authService.logout("/login");
           } else {
             this.errorMessage.set(err.error.message);
           }
@@ -121,8 +120,7 @@ export class PetForm implements OnInit{
             return;
           }
           if (err.status === 403) {
-            this.authService.logout();
-            this.router.navigate(["login"]);
+            this.authService.logout("/login");
             return 
           }
           this.errorMessage.set(err.error?.message ?? "No se ha podido registar la mascota");
@@ -143,8 +141,7 @@ export class PetForm implements OnInit{
             return;
           }
           if (err.status === 403) {
-            this.authService.logout();
-            this.router.navigate(["login"]);
+            this.authService.logout("/login");
             return 
           }
           this.errorMessage.set(err.error?.message ?? "No se ha podido registar la mascota");

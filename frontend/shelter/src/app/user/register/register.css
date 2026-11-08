@@ -52,20 +52,6 @@
     display: flex;
     justify-content: center;
 }
-button {
-    height: 30px;
-    width: 120px;
-    cursor: pointer;
-    background-color: var(--color-button);
-    border: 1px solid var(--color-shadow);
-    border-radius: 5px;
-}
-a {
-    text-decoration: none;
-}
-button:hover {
-    background-color: var(--color-button-accent);
-}
 .form-register{
     margin-top: 20px;
     display: flex;

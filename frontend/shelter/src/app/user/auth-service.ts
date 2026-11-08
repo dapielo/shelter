@@ -77,11 +77,11 @@ export class AuthService {
   }
 
   // para cerrar sesion solo borramos el objeto userSession del localStorage
-  logout() {
+  logout(redirectTo = "/") {
     localStorage.removeItem("userSession");
     this.userSession.set(null);
-    // El propio servicio nos lleva al inicio si cerramos sesion
-    this.router.navigate(["/"]);
+    // Tras cerrar sesion nos lleva a la ruta indicada (por defecto al inicio)
+    this.router.navigate([redirectTo]);
   }
 
   // metodo para registarse 

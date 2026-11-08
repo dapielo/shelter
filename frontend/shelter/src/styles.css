@@ -32,6 +32,55 @@ body{
 *:focus {
     outline: 1px solid var(--color-outline);
 }
+.button {
+    height: 40px;
+    width: 120px;
+    border-radius: 5px;
+    border:1px solid var(--color-shadow);
+}
+.button-blue{
+    background-color: var(--color-background);
+    color: var(--color-blue-text);
+    transition: 0.6s;
+}
+.button-blue:hover {
+    cursor: pointer;
+    color: white;
+    background-color: var(--color-blue); 
+    cursor: pointer;
+}
+.button-green{
+    background-color: var(--color-background);
+    color: var(--color-green-text);
+    transition: 0.6s;
+}
+.button-green:hover {
+    cursor: pointer;
+    color: white;
+    background-color: var(--color-green); 
+    cursor: pointer;
+}
+.button-red{
+    background-color: var(--color-background);
+    color: var(--color-red-text);
+    transition: 0.6s;
+}
+.button-red:hover {
+    cursor: pointer;
+    color: white;
+    background-color: var(--color-red); 
+    cursor: pointer;
+}
+.errorMessage {
+    color: var(--color-error-message);
+    font-weight: 600;
+    margin-bottom:30px;
+    min-height: 30px;
+    justify-self: center;
+}
+.visible {
+    animation: 1s float ease ;
+}
 
 @keyframes focus {
     from {

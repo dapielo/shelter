@@ -145,7 +145,7 @@ public class UserService {
             if (!Validator.isValidEmail(dto.email())) {
                 throw new UserException("El formato del email no es valido");
             }
-            // Comprobamos que el email no este ya en la base de datos, porque tiene que ser único.
+            // Comprobamos que el email haya cambiado y no este ya en la base de datos, porque tiene que ser único.
             if (!user.getEmail().equals(dto.email()) && userRepository.findByEmail(dto.email()).isPresent()) {
                 throw new InvalidEmailException("Ya existe un usuario con ese email");
             }

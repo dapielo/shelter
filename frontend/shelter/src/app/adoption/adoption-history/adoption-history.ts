@@ -3,7 +3,6 @@ import { AdoptionDTO } from '../dto/AdoptionDTO';
 import { AdoptionService } from '../adoption-service';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { AuthService } from '../../user/auth-service';
-import { Router } from '@angular/router';
 import { AdoptionGrid } from '../adoption-grid/adoption-grid';
 
 @Component({
@@ -16,7 +15,6 @@ export class AdoptionHistory implements OnInit{
 
   adoptionService: AdoptionService = inject(AdoptionService);
   authService: AuthService = inject(AuthService);
-  router: Router = inject(Router);
 
   closedAdoptions = signal<AdoptionDTO[]>([]);
   errorMessage = signal<string>('');
@@ -36,8 +34,7 @@ export class AdoptionHistory implements OnInit{
           return;
         }
         if (err.status === 403) {
-          this.authService.logout();
-          this.router.navigate(["login"]);
+          this.authService.logout("/login");
         }
         this.loading.set(false);
         this.errorMessage.set("Ha ocurrido un error cargando los datos");

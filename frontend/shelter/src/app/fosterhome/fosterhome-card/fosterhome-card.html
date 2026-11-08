@@ -10,14 +10,14 @@
             <app-pet-card [pet]="pet" class="item-pet"/>
             <div class="item-buttons">
                 <!-- Le pongo el ! porque es un atributo opcional, asi le indico a angular que se que no va a ser null ni undefined-->
-                <button class="edit" [routerLink]="['/fosterhome',fosterHome().id,'pet','edit',pet.id]">Editar</button>
-                <button class="delete" (click)="deltePet.emit(pet.id!)">Eliminar</button>
+                <button class="button button-blue" [routerLink]="['/fosterhome',fosterHome().id,'pet','edit',pet.id]">Editar</button>
+                <button class="button button-red" (click)="deltePet.emit(pet.id!)">Eliminar</button>
             </div>
         </div>
     }
     <div class="card-buttons">
         <!-- Gracias a la feature withComponentInputBinding() que tnemos en app.config, podemos enviar el valor del id de la foster home y en la ruta destino lo capturamos con input-->
-        <button class="add" [routerLink]="['/fosterhome',fosterHome().id,'pet','create']">Añadir mascota</button>
-        <button class="delete" (click)="deleteFosterHome.emit(fosterHome().id!)">Borrar hogar</button>
+        <button class="button button-green" [routerLink]="['/fosterhome',fosterHome().id,'pet','create']">Añadir mascota</button>
+        <button class="button button-red" (click)="deleteFosterHome.emit(fosterHome().id!)">Borrar hogar</button>
     </div>
 </div>

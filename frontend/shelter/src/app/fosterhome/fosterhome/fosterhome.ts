@@ -1,6 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { AuthService } from '../../user/auth-service';
-import { Router } from '@angular/router';
 import { FosterHomeService } from '../foster-home-service';
 import { FosterHomeDTO } from '../dto/FosterHomeDTO';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -18,7 +17,6 @@ import { ProvinceLabel } from '../dto/ProvinceLabel';
 export class Fosterhome implements OnInit{
 
   auth = inject(AuthService);
-  router = inject(Router);
   fosterHomeService = inject(FosterHomeService);
   petService = inject(PetService);
 
@@ -51,8 +49,7 @@ export class Fosterhome implements OnInit{
       },
       error: (err:HttpErrorResponse) => {
         if (err.status === 403) {
-          this.auth.logout();
-          this.router.navigate(["login"]);
+          this.auth.logout("/login");
         } else {
           this.loading.set(false);
           this.errorMessage.set(err.error.message);
@@ -121,5 +118,4 @@ export class Fosterhome implements OnInit{
       }
     })
   }
-
 }

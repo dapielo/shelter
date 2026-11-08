@@ -1,0 +1,56 @@
+<h1>Modificar datos de usuario</h1>
+
+<div class="errorMessage" [class.visible]="errorMessage()"> {{errorMessage()}} </div>
+
+<div class="form">
+
+    <form (submit)="onSubmit()" [formGroup]="userForm">
+
+        <div class="form-row">
+
+            <div class="row-item">
+                <label for="email">Email: </label>
+                <input type="email" name="email" id="email" formControlName="email" autocomplete="email">
+            </div>
+
+            <div class="row-item">
+                <label for="username">Nombre de usuario:</label>
+                <input type="text" name="username" id="username" formControlName="username" autocomplete="username">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <span>Cubrir solo en caso de cambio de contraseña</span>
+        </div>
+
+        <div class="form-row">
+
+            <div class="row-item">
+                <label for="newPassword">Nueva contraseña: </label>
+                <input type="password" name="newPassword" id="newPassword" formControlName="newPassword" autocomplete="new-password">
+            </div>
+
+            <div class="row-item">
+                <label for="passwordVerification">Confirmación contraseña: </label>
+                <input type="password" name="passwordVerification" id="passwordVerification" formControlName="passwordVerification" autocomplete="new-password">
+            </div>   
+        </div>
+
+        <div class="form-row">
+
+            <div class="row-item">
+                <label for="password">Contraseña actual par confirmar cambios: </label>
+                <input type="password" name="password" id="password" formControlName="password" autocomplete="current-password">
+            </div>
+
+        </div>
+
+        <div class="form-row">
+            <div class="buttons">
+                <button type="submit" class="button button-green">Enviar</button>
+                <button type="button" class="button button-blue" routerLink="/">Cancelar</button>
+            </div>
+        </div>
+
+    </form>
+</div>
