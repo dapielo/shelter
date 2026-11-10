@@ -1,0 +1,30 @@
+<h1>Editar datos del hogar</h1>
+
+<div class="errorMessage" [class.visible]="errorMessage()"> {{errorMessage()}} </div>
+
+<form class="form" [formGroup]="fosterhomeForm" (submit)="onSubmit()">
+
+    <div class="form-field">
+
+        <div class="field-item">
+            <label for="name">Nombre: </label>
+            <input type="text" name="name" id="name" formControlName="name">
+        </div>
+
+        <div class="field-item">
+            <label for="province">Provincia: </label>
+            <select name="province" id="province" formControlName="province">
+                <option value="">Selecciona una provincia...</option>
+                @for (p of provinceSelect; track p.value) {
+                    <option [value]="p.key"> {{p.value}} </option>
+                }
+            </select>
+        </div>
+
+    </div>
+
+    <div class="form-field">
+        <button type="submit" class="button button-green">Enviar cambios</button>
+    </div>
+
+</form>

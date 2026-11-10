@@ -109,4 +109,7 @@ textarea {
     object-position: center;
     border-radius: 10px;
 }
+textarea {
+    margin-bottom: 20px;
+}
 

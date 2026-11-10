@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.david.shelter.dto.AdoptionDTO;
@@ -19,16 +20,18 @@ import com.david.shelter.model.enums.AdoptionStatus;
 import com.david.shelter.model.enums.PetStatus;
 import com.david.shelter.repository.AdoptionRepository;
 import com.david.shelter.repository.PetRepository;
-
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service 
 @RequiredArgsConstructor 
+@Slf4j 
 public class AdoptionService {
 
     private final AdoptionRepository adoptionRepository;
     private final UserService userService;
     private final PetRepository petRepository;
+    private final EmailService emailService;
 
     // CREATE 
     @Transactional 
@@ -59,12 +62,29 @@ public class AdoptionService {
             null, 
             AdoptionStatus.PENDING);   
 
-        try {
+            // Una vez guardada la adopcion, enviamos el email.
             adoptionRepository.save(newAdoption);
-            return AdoptionMapper.toDTO(newAdoption,null);
-        } catch (AdoptionException e) {
-            throw new AdoptionException("No se ha podido iniciar la adopcion");
+
+            try {
+                String text = """
+                    Hola %s.
+                
+
+                    El usuario %s te ha enviado una solicitud para adoptar a %s. 
+                    Entra en la web para aceptar o rechazar la solicitud. Luego espera a que el usuario se ponga en contacto contigo via email.
+                    Su direccion de email de contacto es: %s, la puedes consultar en el apartado "Historial" de Shelter.
+                
+
+                    Un cordial saludo.
+                    El equipo de Shelter.
+                    """.formatted(pet.getFosterHome().getUser().getUsername(), user.getUsername(), pet.getName(), user.getEmail());
+
+            emailService.sendEmail(pet.getFosterHome().getUser().getEmail(),"Se te ha enviado una solicitud de adopcion",text);
+
+        } catch (MailException e) {
+            log.warn("Email could not be sent", e);
         }
+        return AdoptionMapper.toDTO(newAdoption,null);
     }
 
     // READ (tres casos, el usuario quiere adoptar, el usuario es el que la tiene e historial de adopciones cerradas)
@@ -149,14 +169,36 @@ public class AdoptionService {
 
         // Al guardar adoption, se actualiza tambien el estado de la mascota.
         adoptionRepository.save(adoption);
-        return adoption.getAdopter().getEmail();
-    }
 
+        // Enviamos el email
+        try {
+
+            String text = """
+                Hola %s.
+                
+
+                El usuario %s ha aceptado tu solicitud de adopción de %s. Ya puedes ponerte en contacto a través de su email: %s.
+                También lo puedes consultar en el apartado Historial de Shelter.
+                
+
+                Un cordial saludo.
+                El equipo de shelter.
+                """.formatted(adoption.getAdopter().getUsername(), adoption.getPet().getFosterHome().getUser().getUsername(), adoption.getPet().getName(), adoption.getPet().getFosterHome().getUser().getEmail());
+
+                emailService.sendEmail(adoption.getAdopter().getEmail(), "Se ha aceptado tu solicitud de adopción", text);
+
+        } catch (MailException e) {
+            log.warn("Email could not be sent", e);
+        }
+
+        return adoption.getAdopter().getEmail();
+
+        }
+            
     // Igual que el anterior pero para rechazar la peticion, asi no hay que enviar datos (van a ser dos endpoints)
     @Transactional 
     public void declineAdoptionPetition(Long adoptionId) {
 
-        
         User user = userService.getUserFromContext();
         Adoption adoption = adoptionRepository.findById(adoptionId).orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado un proceso de adopcion con id: " + adoptionId));
         
@@ -173,6 +215,28 @@ public class AdoptionService {
         adoption.setStatus(AdoptionStatus.DECLINED);
         adoption.setEndingDate(LocalDate.now());
         adoptionRepository.save(adoption);
+
+        // Enviamos el email
+        try {
+
+            String text = """
+                Hola %s.
+
+                Lamentamos decirte que el usuario %s ha rechazado tu solicitud de adopción de %s. Puede que se haya encariñado demasiado consu amigo, o puede que haya encontrado un hogar antes de que haya visto tu mensaje.
+
+                Pero en Shelter sigue habiendo peludetes (o calvetes), esperando por alguien como tú. Vuelve a visitarnos cuando puedas.
+                
+                
+                Un saludo.
+                El equipo de Shelter.
+                """.formatted(adoption.getAdopter().getUsername(), adoption.getPet().getFosterHome().getUser().getUsername(), adoption.getPet().getName());
+            
+            emailService.sendEmail(adoption.getAdopter().getEmail(), "Se ha rechazado tu solicitud de adopción.", text);
+
+        } catch (MailException e) {
+            log.warn("Email could not be sent.", e);
+        }
+
     }
 
     // DELETE

@@ -59,7 +59,7 @@ export class PetInfo implements OnInit {
     this.adoptionService.iniciateAdoption(Number(this.id())).subscribe({
       next: (data) => {
         alert("La adopcion se ha iniciado, ahora tienes que esperar a recibir una respuesta por parte del hogar de acogida. Se te va a redirigir a tu listado de adociones.")
-        this.router.navigate(["adoptions","pending"]);
+        this.router.navigate(["/adoption","pending"]);
       },
       error: (err) => {
         this.errorMessage.set("No se ha podido iniciar la adopcion: " + err.error.message);

@@ -56,7 +56,7 @@ h1{
     align-items: baseline;
 }
 .form form input, .form form select {
-    width: 140px;
+    width: 230px;
     height: 20px;
     box-sizing: border-box;
 }

@@ -5,6 +5,10 @@
     
     <div class="body">
         <div class="error" [class.visible]="errorMessage()"> {{errorMessage()}} </div>
+
+        @if (fosterHomes().length == 0) {
+            <h1>Nada que mostrar.</h1>
+        }
         
         @for(fosterHome of fosterHomes() ; track fosterHome.id) {
             
@@ -28,11 +32,6 @@
             <div class="form-item">
                 <label for="name">Nombre:</label>
                 <input type="text" name="name" id="name" formControlName="name">
-            </div>
-    
-            <div class="form-item">
-                <label for="capacity">Capacidad:</label>
-                <input type="number" name="capacity" id="capacity" formControlName="capacity">
             </div>
     
             <div class="form-item">

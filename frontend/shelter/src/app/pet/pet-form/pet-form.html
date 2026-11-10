@@ -41,6 +41,14 @@
             <div class="group-item">
                 <label for="info">Información: </label>
                 <textarea name="info" id="info" formControlName="info"></textarea>
+                @if (petId()) {
+                    <label for="fosterHome">Casa de acogida: </label>
+                    <select name="fosterHome" id="fosterHome" formControlName="fosterhomeId">
+                        @for (fh of userFosterHomes() ; track fh.id) {
+                            <option [value]="fh.id"> {{fh.name}} </option>
+                        }
+                    </select>
+                }
             </div>
 
             <div class="group-item item-image">

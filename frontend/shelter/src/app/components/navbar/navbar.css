@@ -78,3 +78,19 @@
     margin-left: 30px;
     min-width: 150px;
 }
+
+@media (max-width:990px) {
+    :host {
+        position: static;
+    }
+    .session {
+        display: none;
+    }
+    .navbar {
+        flex-wrap: wrap;
+        height: fit-content;
+    }
+    .navbar-bar {
+        flex-wrap: wrap;
+    }
+}

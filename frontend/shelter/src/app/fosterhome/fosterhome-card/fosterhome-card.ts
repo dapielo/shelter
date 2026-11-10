@@ -19,4 +19,5 @@ export class FosterhomeCard {
   // Enviamos hacia arriba el evento al clickar en uno de los botones
   deltePet = output<number>();
   deleteFosterHome = output<number>();
+
 }

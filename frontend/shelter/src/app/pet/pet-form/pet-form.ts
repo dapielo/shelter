@@ -8,6 +8,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../user/auth-service';
 import { PetDTO } from '../dto/PetDTO';
 import { environment } from '../../../environments/environment';
+import { FosterHomeService } from '../../fosterhome/foster-home-service';
+import { FosterHomeDTO } from '../../fosterhome/dto/FosterHomeDTO';
 
 @Component({
   selector: 'app-pet-form',
@@ -19,13 +21,14 @@ export class PetForm implements OnInit{
 
   petService: PetService = inject(PetService);
   authService: AuthService = inject(AuthService);
+  fosterhomeService: FosterHomeService = inject(FosterHomeService);
   router: Router = inject(Router);
 
   speciesLabels = Object.entries(SpeciesLabel).map(([value,label]) => ({value: value, label: label}));
   ageGroupLabels = Object.entries(AgeGroupLabel).map(([value,label]) => ({value:value, label:label}));
 
   // el id nos viene en la ruta, lo capturamos con input
-  fosterhomeId = input.required<number>();
+  currentFosterhomeId = input.required<number>();
   // el id de la masctota n os viene en la ruta si venimos desde el boton de editar
   petId = input<number>();
   // aqui van los datos de la mascota que estamos editando
@@ -34,6 +37,8 @@ export class PetForm implements OnInit{
   imageServerPath = computed(() => {
     return this.existentPet()?.imagePath != null ? `${environment.api}/image/${this.existentPet()!.imagePath}` : '';
   });
+  // Aqui vamos a guardar las casas de acogida por si quieremos cambar la mascota de hogar
+  userFosterHomes = signal<FosterHomeDTO[]>([]);
 
   petForm = new FormGroup({
 
@@ -42,6 +47,7 @@ export class PetForm implements OnInit{
     breed: new FormControl(''),
     ageGroup: new FormControl(''),
     info: new FormControl(''),
+    fosterhomeId: new FormControl('')
   });
 
   imageClientPath = signal<File | null>(null);
@@ -58,6 +64,7 @@ export class PetForm implements OnInit{
     }
     // si nos viene un petId, es porque se nos ha dirigido hasta aqui a traves del boton de editar de fosterhome-card buscamos la informacion de la mascota y rellenamos el formulario
     if (this.petId()) {
+
       this.petService.getPet(this.petId()!).subscribe({
         next: (data: PetDTO) => {
           this.existentPet.set(data);
@@ -66,8 +73,29 @@ export class PetForm implements OnInit{
             ageGroup: data.ageGroup,
             breed: data.breed,
             species: data.species,
-            info: data.info
+            info: data.info,
+            fosterhomeId: data.fosterHomeId.toString()
           });
+        },
+        error: (err: HttpErrorResponse) => {
+          if (err.status === 0) {
+            this.errorMessage.set("Error de conexion, vuelve a intetarlo cuando tengas conexión");
+            window.scroll({behavior: 'smooth', top:0});
+            return;
+          }
+          if (err.status === 403) {
+            this.authService.logout("/login");
+          } else {
+            this.errorMessage.set(err.error.message);
+            window.scroll({behavior: 'smooth', top:0});
+          }
+        }
+      });
+
+      // Buscamos tambien las casas de acogida del usuario para montar un select que permita cambiar la mascota de hogar
+      this.fosterhomeService.getFosterHomes().subscribe({
+        next: (data: FosterHomeDTO[]) => {
+          this.userFosterHomes.set(data);
         },
         error: (err: HttpErrorResponse) => {
           if (err.status === 0) {
@@ -80,8 +108,9 @@ export class PetForm implements OnInit{
             this.errorMessage.set(err.error.message);
           }
         }
-      });
+      })
     }
+
   }
 
   onReset() {
@@ -102,7 +131,7 @@ export class PetForm implements OnInit{
 
     formData.append("name",values.name!); // ! poruqe sabemos que viene, es obligatorio
     formData.append("species",values.species!); // igual que con name
-    formData.append("fosterHomeId",this.fosterhomeId().toString());
+    formData.append("fosterHomeId",values.fosterhomeId ? values.fosterhomeId : this.currentFosterhomeId().toString());
     values.breed && formData.append("breed",values.breed); // && por cortocircuito si lo de la izquierda es falsy ya no ejecuta lo de la derecha
     values.ageGroup && formData.append("ageGroup",values.ageGroup);
     values.info && formData.append("info",values.info);
@@ -117,6 +146,7 @@ export class PetForm implements OnInit{
         error: (err: HttpErrorResponse) => {
           if (err.status === 0) {
             this.errorMessage.set("No tienes conexion a internet, vuelve a intentarlo");
+            window.scroll({behavior: 'smooth', top:0});
             return;
           }
           if (err.status === 403) {
@@ -124,6 +154,7 @@ export class PetForm implements OnInit{
             return 
           }
           this.errorMessage.set(err.error?.message ?? "No se ha podido registar la mascota");
+            window.scroll({behavior: 'smooth', top:0});
         }
       });
 
@@ -138,6 +169,7 @@ export class PetForm implements OnInit{
         error: (err: HttpErrorResponse) => {
           if (err.status === 0) {
             this.errorMessage.set("No tienes conexion a internet, vuelve a intentarlo");
+            window.scroll({behavior: 'smooth', top:0});
             return;
           }
           if (err.status === 403) {
@@ -145,13 +177,10 @@ export class PetForm implements OnInit{
             return 
           }
           this.errorMessage.set(err.error?.message ?? "No se ha podido registar la mascota");
+          window.scroll({behavior: 'smooth', top:0});
         }
       });
     }
-  }
-
-  onUpdate() {
-
   }
 
   deleteImage() {

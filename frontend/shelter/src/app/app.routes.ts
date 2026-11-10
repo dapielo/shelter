@@ -9,6 +9,7 @@ import { PetForm } from './pet/pet-form/pet-form';
 import { AdoptionHistory } from './adoption/adoption-history/adoption-history';
 import { Fosterhome } from './fosterhome/fosterhome/fosterhome';
 import { Profile } from './user/profile/profile';
+import { EditFosterhome } from './fosterhome/edit-fosterhome/edit-fosterhome';
 
 export const routes: Routes = [
     // Ojo con las rutas, nunca empiezan por "/"
@@ -20,8 +21,9 @@ export const routes: Routes = [
     {path:"adoption/pending", component:PendingAdoptions},
     {path:"fosterhome", component:Fosterhome},
     {path:"pet/search", component:SearchForm},
-    {path:"fosterhome/:fosterhomeId/pet/create", component:PetForm},
+    {path:"fosterhome/:currentFosterhomeId/pet/create", component:PetForm},
     {path:"adoption/history", component:AdoptionHistory},
     {path:"fosterhome/:fosterhomeId/pet/edit/:petId", component:PetForm},
-    {path:"profile",component:Profile}
+    {path:"profile", component:Profile},
+    {path:"fosterhome/:fosterhomeId/edit", component:EditFosterhome}
 ];

@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# el .env que tiene secretos
+.env

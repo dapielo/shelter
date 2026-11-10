@@ -40,11 +40,6 @@ public class FosterHomeService {
             throw new FosterHomeException("El nombre de la casas de acogida tiene que tener entre 1 y 20 caracteres");
         }
 
-        // Si la capacidad es menor que 1 se cancela la operacion
-        if (dto.capacity() < 1) {
-            throw new FosterHomeException("La capacidad de la casa de acogida no puede ser menor que 1");
-        }
-
         FosterHome fosterHome = FosterHomeMapper.toEntity(dto);
         // ponemos el id a null, por si venia algo en el, si nos lo envian un con un valor que existe en la BD se sobreescribiria esa casa de acogida con los datos de esta
         fosterHome.setId(null);
@@ -103,14 +98,8 @@ public class FosterHomeService {
         if (dto.name().length() < 1 || dto.name().length() > 20) {
             throw new FosterHomeException("El nombre de la casas de acogida tiene que tener entre 1 y 20 caracteres");
         }
-
-        // Si la capacidad es menor que 1 se cancela la operacion
-        if (dto.capacity() < 1) {
-            throw new FosterHomeException("La capacidad de la casa de acogida no puede ser menor que 1");
-        }
         
         fosterHome.setName(dto.name());
-        fosterHome.setCapacity(dto.capacity());
         fosterHome.setProvince(dto.province());
   
         try {

@@ -37,10 +37,6 @@ public class FosterHome {
     @NotBlank 
     String name;
 
-    @NotNull 
-    @Column (nullable = false)
-    private Integer capacity;
-
     @NotNull  
     @Column (nullable = false)
     @Enumerated (EnumType.STRING)

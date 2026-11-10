@@ -31,13 +31,8 @@ export class Fosterhome implements OnInit{
 
     name: new FormControl('',Validators.required),
 
-    capacity: new FormControl(1,[
-      Validators.required,
-      Validators.min(1)
-    ]),
-
     province: new FormControl('',Validators.required)
-  })
+  });
 
   ngOnInit() {
 
@@ -53,6 +48,7 @@ export class Fosterhome implements OnInit{
         } else {
           this.loading.set(false);
           this.errorMessage.set(err.error.message);
+          window.scroll({behavior: 'smooth', top:0});
         }
       }
     });
@@ -71,8 +67,10 @@ export class Fosterhome implements OnInit{
         error: (err: HttpErrorResponse) => {
           if (err.status === 0) {
             this.errorMessage.set("Error de conexion, vuelvelo a intentar");
+            window.scroll({behavior: 'smooth', top:0});
           } else {
             this.errorMessage.set(err.error.message);
+            window.scroll({behavior: 'smooth', top:0});
           }
         }
       });
@@ -88,8 +86,10 @@ export class Fosterhome implements OnInit{
         error: (err: HttpErrorResponse) => {
           if (err.status === 0) {
             this.errorMessage.set("Error de conexion, vuelvelo a intentar");
+            window.scroll({behavior: 'smooth', top:0});
           } else {
             this.errorMessage.set(err.error.message);
+            window.scroll({behavior: 'smooth', top:0});
           }
         }
       });
@@ -101,6 +101,7 @@ export class Fosterhome implements OnInit{
 
     if (!this.fosterHomeForm.valid) {
       this.errorMessage.set("Los datos del hogar no son correctos");
+      window.scroll({behavior: 'smooth', top:0});
       return;
     }
     this.errorMessage.set('');
@@ -112,8 +113,10 @@ export class Fosterhome implements OnInit{
       error: (err: HttpErrorResponse) => {
         if (err.status === 0) {
           this.errorMessage.set('Error de conexion, revisa si tienes internet');
+          window.scroll({behavior: 'smooth', top:0});
         } else {
           this.errorMessage.set(err.error.message);
+          window.scroll({behavior: 'smooth', top:0});
         }
       }
     })

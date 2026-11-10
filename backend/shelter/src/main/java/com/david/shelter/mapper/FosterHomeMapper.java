@@ -16,7 +16,6 @@ public class FosterHomeMapper {
         return new FosterHome(
             dto.id(), 
             dto.name(),
-            dto.capacity(), 
             dto.province(), 
             null,
             null
@@ -37,7 +36,6 @@ public class FosterHomeMapper {
         return new FosterHomeDTO(
             fosterHome.getId(), 
             fosterHome.getName(),
-            fosterHome.getCapacity(), 
             fosterHome.getProvince(),
             petsDTO
         );

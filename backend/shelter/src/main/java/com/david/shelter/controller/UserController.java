@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,34 +46,6 @@ public class UserController {
         return new ResponseEntity<>(body,HttpStatus.OK);
     }
 
-    /* 
-    // Cambiar el nombre de usuario, recibe un campo "username" con el nuevo nombre de usuario
-    @PreAuthorize ("isAuthenticated()")
-    @PutMapping ("/edit/{username}")
-    public ResponseEntity<Void> changeUsername(@PathVariable String username) {
-
-        userService.updateUsername(username);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    // Cambiar la contraseña
-    @PreAuthorize ("isAuthenticated()")
-    @PutMapping ("edit/password")
-    public ResponseEntity<Void> changePassword(@Valid @RequestBody PasswordChangeDTO dto) {
-
-        userService.updatePassword(dto);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    // Cambiar el email
-    @PreAuthorize ("isAuthenticated()")
-    @PutMapping ("/edit/email")
-    public ResponseEntity<LoginResponseDTO> changeEmail(@Valid @RequestBody EmailChangeDTO dto) {
-
-        LoginResponseDTO body = userService.updateEmail(dto);
-        return new ResponseEntity<>(body,HttpStatus.OK);
-    }
-*/
     // DELETE
     @PreAuthorize ("isAuthenticated()") 
     @DeleteMapping ("/delete/{userEmail}")

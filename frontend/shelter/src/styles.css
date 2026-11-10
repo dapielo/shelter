@@ -74,9 +74,11 @@ body{
 .errorMessage {
     color: var(--color-error-message);
     font-weight: 600;
-    margin-bottom:30px;
+    margin-bottom:20px;
+    margin-top: 20px;
     min-height: 30px;
     justify-self: center;
+    font-size: 1.5rem;
 }
 .visible {
     animation: 1s float ease ;
