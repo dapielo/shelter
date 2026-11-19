@@ -23,6 +23,7 @@
     padding: 10px 120px 40px 120px;
     font-size: 1.2rem;
     animation: dissapear 3s forwards;
+    border-radius: 10px;
 }
 .form {
     display: flex;
@@ -38,7 +39,7 @@
 .form-field input {
     border: 1px solid var(--color-shadow);
     border-radius: 5px;
-    height: 25px;
+    height: 30px;
     width: 300px;
 }
 .form-field input:focus{

@@ -20,6 +20,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://shelter-db:3306/shelter
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-root}
+      MAIL.PASSWORD: "wlokyuqpevdwkqyx"
     volumes:
       - uploads:/app/uploads
     depends_on:
