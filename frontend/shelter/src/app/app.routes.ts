@@ -17,7 +17,7 @@ export const routes: Routes = [
     {path:"home", component:Home},
     {path:"login", component:Login},
     {path:"register", component:Register},
-    {path:"pet/info/:id", component:PetInfo}, // El :id, hace que esa parte de la ruta sea una variable para poder capturarla en el componente que lo necesite
+    {path:"pet/info/:id",loadComponent:() => import("./pet/pet-info/pet-info").then(module => module.PetInfo)}, // El :id, hace que esa parte de la ruta sea una variable para poder capturarla en el componente que lo necesite
     {path:"adoption/pending", component:PendingAdoptions},
     {path:"fosterhome", component:Fosterhome},
     {path:"pet/search", component:SearchForm},
