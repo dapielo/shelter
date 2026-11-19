@@ -1,10 +1,13 @@
 package com.david.shelter.service;
 
+import com.david.shelter.controller.FosterHomeController;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.david.shelter.client.MapClient;
+import com.david.shelter.client.dto.MapInfo;
 import com.david.shelter.dto.FosterHomeDTO;
 import com.david.shelter.exception.FosterHomeException;
 import com.david.shelter.exception.ResourceNotFoundException;
@@ -13,10 +16,10 @@ import com.david.shelter.model.entity.Adoption;
 import com.david.shelter.model.entity.FosterHome;
 import com.david.shelter.model.entity.Pet;
 import com.david.shelter.model.entity.User;
+import com.david.shelter.model.enums.PetStatus;
 import com.david.shelter.repository.AdoptionRepository;
 import com.david.shelter.repository.FosterHomeRepository;
 import com.david.shelter.repository.PetRepository;
-
 import lombok.RequiredArgsConstructor;
 
 @Service 
@@ -24,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class FosterHomeService {
 
     private final FileService fileService;
+    private final MapClient mapClient;
     private final FosterHomeRepository fosterHomeRepository;
     private final UserService userService;
     private final AdoptionRepository adoptionRepository;
@@ -41,6 +45,7 @@ public class FosterHomeService {
         }
 
         FosterHome fosterHome = FosterHomeMapper.toEntity(dto);
+        fosterHome.setActive(true);
         // ponemos el id a null, por si venia algo en el, si nos lo envian un con un valor que existe en la BD se sobreescribiria esa casa de acogida con los datos de esta
         fosterHome.setId(null);
         // Le asociamos el usuario
@@ -52,7 +57,8 @@ public class FosterHomeService {
 
         try {
             FosterHome saved = fosterHomeRepository.save(fosterHome);
-            return FosterHomeMapper.toDTO(saved);
+            MapInfo map = mapClient.getGeolocation(saved.getProvince()).orElse(null);
+            return FosterHomeMapper.toDTO(saved, map != null ? map.boundingbox() : null, map != null ? map.display_name() : null);
         // capturamos los errores que puede lanzar el save
         } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
             throw new FosterHomeException("No se ha podido registrar la casa de acogida, algún dato era incorrecto");
@@ -61,12 +67,16 @@ public class FosterHomeService {
 
     // READ
     public List<FosterHomeDTO> findByUserWithPets() {
-        User user = userService.getUserFromContext();
 
+        User user = userService.getUserFromContext();
+        
         // Devolvemos la lista de coincidencias, mapeandolas antes como DTOs para enviarlas al front
         return fosterHomeRepository.findByUserWithPets(user)
             .stream()
-            .map(FosterHomeMapper::toDTO)
+            .map(fh -> {
+                MapInfo map = mapClient.getGeolocation(fh.getProvince()).orElse(null);
+                return FosterHomeMapper.toDTO(fh, map != null ? map.boundingbox() : null, map != null ? map.display_name() : null);
+            })
             .toList();
 
     }
@@ -88,6 +98,10 @@ public class FosterHomeService {
         FosterHome fosterHome = fosterHomeRepository.findById(dto.id())
                                 .orElseThrow(() -> new FosterHomeException("Hogar de acogida no encontrado al intentar cambiar sus datos. ID: " + dto.id()));
 
+        if (!fosterHome.isActive()) {
+            throw new FosterHomeException("Esa casa de acogida ha sido borrada");
+        }
+
         // Comprobamos que realmente se esta intentadno actualizar una casa de acogida del propio usuario (un usuario con conocimientos de Postman podria
         // hacer una peticion de actualizacion de una casa de acogida que no le pertenece cambiando el id en el JSON de la peticion)
         if (fosterHome.getUser().getId().longValue() != user.getId().longValue()) {
@@ -103,7 +117,9 @@ public class FosterHomeService {
         fosterHome.setProvince(dto.province());
   
         try {
-            return FosterHomeMapper.toDTO(fosterHomeRepository.save(fosterHome));
+            FosterHome saved = fosterHomeRepository.save(fosterHome);
+            MapInfo map = mapClient.getGeolocation(saved.getProvince()).orElse(null);
+            return FosterHomeMapper.toDTO(saved, map != null ? map.boundingbox() : null, map != null ? map.display_name() : null);
         } catch (IllegalArgumentException e) {
             throw new FosterHomeException("Algún dato de la casa de acogida no es válido, no se ha podido cambiar");
         }
@@ -124,21 +140,31 @@ public class FosterHomeService {
 
         // Buscamos las adopciones asociadas a mascotas de esta casa de acogida
         List<Adoption> adoptionsByOwner = adoptionRepository.findByOwner(user);
-        List<Adoption> adoptionsInThisFoseterHome = adoptionsByOwner.stream()
-                                                        .filter(adoption -> adoption.getPet().getFosterHome().getId().longValue() == fosterHome.getId().longValue())
+        List<Adoption> activeAdoptions = adoptionsByOwner.stream()
+                                                        .filter(adoption -> {
+                                                            boolean isInThisFH = adoption.getPet().getFosterHome().getId().longValue() == fosterHome.getId().longValue();
+                                                            boolean isAvailable = adoption.getPet().getStatus() == PetStatus.AVAILABLE;
+                                                            return isInThisFH && isAvailable;
+                                                        })
                                                         .toList();
         
         // Buscamos las mascotas asociadas a esta casa de acogida para borrar sus imagenes del FileService
-        List<Pet> petsInThisFosterHome = petRepository.findByFosterHome(fosterHome);
+        List<Pet> availablePets = petRepository.findByFosterHome(fosterHome).stream()
+                                                        .filter(p -> p.getStatus() == PetStatus.AVAILABLE)
+                                                        .toList();
 
-        // Ahora borramos las adopciones asociadas porque tienen clave foranea de las mascotas que hay en la casa de acogida
-        adoptionRepository.deleteAll(adoptionsInThisFoseterHome);
-        // Ahora borramos la casa de acogida (por si el borrado falla)
-        fosterHomeRepository.delete(fosterHome);
+        // Borramos mascotas disponibles y adopciones de las que estaban disponibles
+        adoptionRepository.deleteAll(activeAdoptions);
+        petRepository.deleteAll(availablePets);
+        // Las mascotas estan cargadas en  memoria, las borramos de la entidad antes de guardar
+        fosterHome.getPets().removeAll(availablePets);
+        // Ahora marcamos la casa como inactiva
+        fosterHome.setActive(false);
+        fosterHomeRepository.save(fosterHome);
         // Forzamos la actualizacion de la base de datos para ver si hay errores, sino perderiamos las imagenes sin que se borrase nada
         fosterHomeRepository.flush();
-        // por ultimo borramos las imagenes de las mascotas que habia en ella
-        petsInThisFosterHome.stream()
+        // por ultimo borramos las imagenes de las mascotas disponibles que habia en ella
+        availablePets.stream()
                             .forEach(pet -> {fileService.deleteImage(pet.getImagePath());});
 
     }

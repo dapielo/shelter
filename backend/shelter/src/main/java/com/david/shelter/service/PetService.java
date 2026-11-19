@@ -1,10 +1,11 @@
 package com.david.shelter.service;
 
 import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import com.david.shelter.client.MapClient;
+import com.david.shelter.client.dto.MapInfo;
 import com.david.shelter.dto.PetDTO;
 import com.david.shelter.exception.PetException;
 import com.david.shelter.exception.ResourceNotFoundException;
@@ -28,6 +29,7 @@ public class PetService {
     private final FosterHomeRepository fosterHomeRepository;
     private final UserService userService;
     private final FileService fileService;
+    private final MapClient mapClient;
     private final AdoptionRepository adoptionRepository;
 
     // CREATE
@@ -53,6 +55,10 @@ public class PetService {
         // Recordemos que al tener una relacion N:1 con User, el objeto fosterHome viene por defecto con el atributo user cargado con los datos del usuario
         FosterHome fosterHome = fosterHomeRepository.findById(dto.fosterHomeId())
                     .orElseThrow(() -> new ResourceNotFoundException("Error al registrar la mascota, no se ha encontrado una casa de acogida con ese ID"));
+
+        if (!fosterHome.isActive()) {
+            throw new PetException("No se puede añadir a una casa de acogida que ha sido eliminada");
+        }
         
         // Si el id del usuario que hace la peticion, no coincide con el id del usuario relacionado con el fosterHome que nos indica el dto de la mascota
         // es que la peticion se esta haciendo para una casa de acogida que no pertenece a este usuario (peticion maliciosa). Lanzamos error
@@ -66,8 +72,11 @@ public class PetService {
         String imagePath = fileService.storeImage(image, user);
         pet.setImagePath(imagePath);
 
+        MapInfo map = mapClient.getGeolocation(pet.getFosterHome().getProvince()).orElse(null);
+
         try {
-            return PetMapper.toDTO(petRepository.saveAndFlush(pet));
+            Pet saved = petRepository.saveAndFlush(pet);
+            return PetMapper.toDTO(saved, map != null ? map.boundingbox() : null, map != null ? map.display_name() : null);
         } catch (RuntimeException e) {
             // Si hay algun error borramos la imagen para que no quede huerfana
             fileService.deleteImage(imagePath);
@@ -79,23 +88,31 @@ public class PetService {
     // Cualquiera puede leer la informacion de las mascotas, porque la app permite buscar sin estar registrado.
     public PetDTO getPetById(Long id) {
 
-        return PetMapper.toDTO(petRepository.findById(id).orElseThrow(() -> new PetException("No existe ninguna mascota con ese id")));
+        Pet saved = petRepository.findById(id).orElseThrow(() -> new PetException("No existe ninguna mascota con ese id"));
+        MapInfo map = mapClient.getGeolocation(saved.getFosterHome().getProvince()).orElse(null);
+        return PetMapper.toDTO(saved, map != null ? map.boundingbox() : null, map != null ? map.display_name() : null);
+        
     }
 
     // para obtener las mascotas en una provincia para los filtros de la aplicacion, solo para las disponibles
     public List<PetDTO> findByProvince(Province province) {
         
+        MapInfo map = mapClient.getGeolocation(province).orElse(null);
+
         return petRepository.findByFosterHomeProvince(province)
                 .stream()
                 .filter(pet -> pet.getStatus() == PetStatus.AVAILABLE)
-                .map(PetMapper::toDTO)
+                .map(pet -> PetMapper.toDTO(pet, map != null ? map.boundingbox(): null, map != null ? map.display_name() : null))
                 .toList();
     }
 
     // Devolvemos los 5 que llevan mas tiempo sin adoptar
     public List<PetDTO> findAll() {
         return petRepository.findAll().stream()
-                    .map(PetMapper::toDTO)
+                    .map(pet -> {
+                        MapInfo map = mapClient.getGeolocation(pet.getFosterHome().getProvince()).orElse(null);
+                        return PetMapper.toDTO(pet, map != null ? map.boundingbox() : null, map != null ? map.display_name() : null);
+                    })
                     .toList();
     }
 
@@ -138,9 +155,14 @@ public class PetService {
         // Vamos a comporobar que el id de casa de acogida que nos envian del front se corresponde con una casa de acogida del usuario que hace la peticion
         FosterHome newFosterHome = fosterHomeRepository.findById(dto.fosterHomeId())
                                     .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado la casa de acogida nueva al actualizar la informacion de la mascota"));
+
         if (newFosterHome.getUser().getId().longValue() != user.getId().longValue()) {
             throw new PetException("No se ha podido actualizar la mascota, la casa de acogida en la que se intena registrar no pertenece a este usuario");
         }      
+
+        if (!newFosterHome.isActive()) {
+            throw new PetException("No se ha podido actualizar la mascota, esa casa de acogida ha sido eliminada");
+        }
 
         pet.setName(dto.name());
         pet.setSpecies(dto.species());
@@ -160,16 +182,18 @@ public class PetService {
             pet.setImagePath(newImagePath);
         }
 
+        MapInfo map = mapClient.getGeolocation(pet.getFosterHome().getProvince()).orElse(null);
+
         try {
             
-            PetDTO updated = PetMapper.toDTO(petRepository.saveAndFlush(pet));
+            Pet updated = petRepository.saveAndFlush(pet);
 
             if (newImagePath != null) {
                 // Si se ha reemplazado borramos la vieja que ha quedado huerfana
                 fileService.deleteImage(oldImagePath);
             }
 
-            return updated;
+            return PetMapper.toDTO(updated, map != null ? map.boundingbox() : null, map != null ? map.display_name() : null);
 
         } catch (RuntimeException e) {
             // Si hay un error borramos la imagen poruqe quedaria huerfana
@@ -208,6 +232,10 @@ public class PetService {
 
         Pet pet = petRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("No se ha borrado la mascota porque no se encuentra una mascota con ese id en la base de datos"));
+
+        if (pet.getStatus() == PetStatus.ADOPTED) {
+            throw new PetException("Esa mascota ya ha sido adoptada, no la puedes eliminar");
+        }
 
         // cancelamos la peticion si la mascota no pertenece al usuario que hace la peticion
         if (pet.getFosterHome().getUser().getId().longValue() != user.getId().longValue()) {

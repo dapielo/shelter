@@ -21,5 +21,7 @@ public record PetDTO(
     @NotNull (message = "tiene que tener una casa de acogida asociada")
     Long fosterHomeId,
     PetStatus status,
-    String imagePath
+    String imagePath,
+    Double[] coordinates,
+    String mapName
 ) { }

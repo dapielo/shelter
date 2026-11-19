@@ -16,13 +16,14 @@ public class FosterHomeMapper {
         return new FosterHome(
             dto.id(), 
             dto.name(),
+            true,
             dto.province(), 
             null,
             null
         );
     }
 
-    public static FosterHomeDTO toDTO(FosterHome fosterHome) {
+    public static FosterHomeDTO toDTO(FosterHome fosterHome, Double[] coordinates, String mapName) {
 
         // Tenemos que hacer un mapeo previo del List de mascotas, para convertirlo en una lista de dtos, para luego añadirselo al FosterHome mapeado
         // aprovechamos para filtar las mascotas que ya estan adoptadas, no las borramos para el historial, pero no deberian de salir cuando un usuario
@@ -30,7 +31,7 @@ public class FosterHomeMapper {
         List<PetDTO> petsDTO = fosterHome.getPets()
             .stream()
             .filter(pet -> pet.getStatus() == PetStatus.AVAILABLE)
-            .map(PetMapper::toDTO)
+            .map(pet -> PetMapper.toDTO(pet,coordinates,mapName))
             .toList();
             
         return new FosterHomeDTO(

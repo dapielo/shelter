@@ -4,13 +4,13 @@ import { Session } from '../../user/session/session';
 import { AuthService } from '../../user/auth-service';
 
 @Component({
-  selector: 'app-navbar',
-  // en imports tiene que ir solamente lo que se use en la plantilla
-  imports: [RouterLink, Session],
-  templateUrl: './navbar.html',
-  styleUrl: './navbar.css',
+    selector: 'app-navbar',
+    // en imports tiene que ir solamente lo que se use en la plantilla
+    imports: [RouterLink, Session],
+    templateUrl: './navbar.html',
+    styleUrl: './navbar.css',
 })
 export class Navbar {
 
-  public authService = inject(AuthService);
+    public authService = inject(AuthService);
 }

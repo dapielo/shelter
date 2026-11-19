@@ -1,4 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
+@import 'maplibre-gl/dist/maplibre-gl.css'; /* Imprescindible para usar MapLibre*/
+
+*, *::after, *::before {
+    box-sizing: border-box;
+}
+
 :root{
     --text-color: rgb(76, 47, 11);
     --background-color: rgb(253, 251, 247);

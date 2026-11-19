@@ -3,12 +3,12 @@ import { PetDTO } from '../dto/PetDTO';
 import { PetCard } from '../pet-card/pet-card';
 
 @Component({
-  selector: 'app-pet-grid',
-  imports: [PetCard],
-  templateUrl: './pet-grid.html',
-  styleUrl: './pet-grid.css',
+     selector: 'app-pet-grid',
+     imports: [PetCard],
+     templateUrl: './pet-grid.html',
+     styleUrl: './pet-grid.css',
 })
 export class PetGrid {
 
-  pets = input.required<PetDTO[]>();
+     pets = input.required<PetDTO[]>();
 }

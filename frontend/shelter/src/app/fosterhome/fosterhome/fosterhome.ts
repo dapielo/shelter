@@ -9,116 +9,116 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ProvinceLabel } from '../dto/ProvinceLabel';
 
 @Component({
-  selector: 'app-fosterhome',
-  imports: [FosterhomeCard, ReactiveFormsModule],
-  templateUrl: './fosterhome.html',
-  styleUrl: './fosterhome.css',
+    selector: 'app-fosterhome',
+    imports: [FosterhomeCard, ReactiveFormsModule],
+    templateUrl: './fosterhome.html',
+    styleUrl: './fosterhome.css',
 })
-export class Fosterhome implements OnInit{
+export class Fosterhome implements OnInit {
 
-  auth = inject(AuthService);
-  fosterHomeService = inject(FosterHomeService);
-  petService = inject(PetService);
+    auth = inject(AuthService);
+    fosterHomeService = inject(FosterHomeService);
+    petService = inject(PetService);
 
-  fosterHomes = signal<FosterHomeDTO[]>([]);
-  errorMessage = signal<string>('');
-  loading = signal<boolean>(true);
-  showAddForm = signal<boolean>(false);
+    fosterHomes = signal<FosterHomeDTO[]>([]);
+    errorMessage = signal<string>('');
+    loading = signal<boolean>(true);
+    showAddForm = signal<boolean>(false);
 
-  provinceSelect = Object.entries(ProvinceLabel).map(([v, l]) => ({value:v,label:l}));
+    provinceSelect = Object.entries(ProvinceLabel).map(([v, l]) => ({ value: v, label: l }));
 
-  fosterHomeForm : FormGroup = new FormGroup({
+    fosterHomeForm: FormGroup = new FormGroup({
 
-    name: new FormControl('',Validators.required),
+        name: new FormControl('', Validators.required),
 
-    province: new FormControl('',Validators.required)
-  });
-
-  ngOnInit() {
-
-    this.fosterHomeService.getFosterHomes().subscribe({
-      next: data => {
-        this.fosterHomes.set([...data]);
-        this.loading.set(false);
-        this.showAddForm.set(true);
-      },
-      error: (err:HttpErrorResponse) => {
-        if (err.status === 403) {
-          this.auth.logout("/login");
-        } else {
-          this.loading.set(false);
-          this.errorMessage.set(err.error.message);
-          window.scroll({behavior: 'smooth', top:0});
-        }
-      }
+        province: new FormControl('', Validators.required)
     });
-  }
 
-  // capturamos el evento con el valor que emite el output de los botones de las tarjetas
-  onDeletePet(petId: number, fosterhomeId: number) {
+    ngOnInit() {
 
-    if (confirm("Seguro que quieres borrar?")) {
-
-      this.petService.deletePet(petId).subscribe({
-        next: () => {
-          // actualizamos las casas de acoida, de cada una de ellas, expandimos el objeto y reasignamos pets filtrando si tiene un pet con el id de la que borramos
-          this.fosterHomes.update(list => list.map(fosterHome => ({...fosterHome, pets: fosterHome.pets?.filter(p => p.id !== petId)})));
-        },
-        error: (err: HttpErrorResponse) => {
-          if (err.status === 0) {
-            this.errorMessage.set("Error de conexion, vuelvelo a intentar");
-            window.scroll({behavior: 'smooth', top:0});
-          } else {
-            this.errorMessage.set(err.error.message);
-            window.scroll({behavior: 'smooth', top:0});
-          }
-        }
-      });
+        this.fosterHomeService.getFosterHomes().subscribe({
+            next: data => {
+                this.fosterHomes.set([...data]);
+                this.loading.set(false);
+                this.showAddForm.set(true);
+            },
+            error: (err: HttpErrorResponse) => {
+                if (err.status === 403) {
+                    this.auth.logout("/login");
+                } else {
+                    this.loading.set(false);
+                    this.errorMessage.set(err.error.message);
+                    window.scroll({ behavior: 'smooth', top: 0 });
+                }
+            }
+        });
     }
-  }
 
-  onDeleteFosterHome(fosterHomeId: number) {
-    
-    if (confirm("Seguro que quieres borrar el hogar? Se perderan las publicaciones de todas sus mascotas")) {
+    // capturamos el evento con el valor que emite el output de los botones de las tarjetas
+    onDeletePet(petId: number, fosterhomeId: number) {
 
-      this.fosterHomeService.deleteFosterHome(fosterHomeId).subscribe({
-        next: () => { this.fosterHomes.set(this.fosterHomes().filter(f => f.id !== fosterHomeId)) },
-        error: (err: HttpErrorResponse) => {
-          if (err.status === 0) {
-            this.errorMessage.set("Error de conexion, vuelvelo a intentar");
-            window.scroll({behavior: 'smooth', top:0});
-          } else {
-            this.errorMessage.set(err.error.message);
-            window.scroll({behavior: 'smooth', top:0});
-          }
+        if (confirm("Seguro que quieres borrar?")) {
+
+            this.petService.deletePet(petId).subscribe({
+                next: () => {
+                    // actualizamos las casas de acoida, de cada una de ellas, expandimos el objeto y reasignamos pets filtrando si tiene un pet con el id de la que borramos
+                    this.fosterHomes.update(list => list.map(fosterHome => ({ ...fosterHome, pets: fosterHome.pets?.filter(p => p.id !== petId) })));
+                },
+                error: (err: HttpErrorResponse) => {
+                    if (err.status === 0) {
+                        this.errorMessage.set("Error de conexion, vuelvelo a intentar");
+                        window.scroll({ behavior: 'smooth', top: 0 });
+                    } else {
+                        this.errorMessage.set(err.error.message);
+                        window.scroll({ behavior: 'smooth', top: 0 });
+                    }
+                }
+            });
         }
-      });
     }
-  }
 
-  // Pequeño formulario de creacion de casas de acogida
-  onCreateFosterHome() {
+    onDeleteFosterHome(fosterHomeId: number) {
 
-    if (!this.fosterHomeForm.valid) {
-      this.errorMessage.set("Los datos del hogar no son correctos");
-      window.scroll({behavior: 'smooth', top:0});
-      return;
-    }
-    this.errorMessage.set('');
+        if (confirm("Seguro que quieres borrar el hogar? Se perderan las publicaciones de todas sus mascotas")) {
 
-    this.fosterHomeService.createFosterHome(this.fosterHomeForm.getRawValue()).subscribe({
-      next: (data: FosterHomeDTO) => {
-        this.fosterHomes.update(list => [...list,data]);
-      },
-      error: (err: HttpErrorResponse) => {
-        if (err.status === 0) {
-          this.errorMessage.set('Error de conexion, revisa si tienes internet');
-          window.scroll({behavior: 'smooth', top:0});
-        } else {
-          this.errorMessage.set(err.error.message);
-          window.scroll({behavior: 'smooth', top:0});
+            this.fosterHomeService.deleteFosterHome(fosterHomeId).subscribe({
+                next: () => { this.fosterHomes.set(this.fosterHomes().filter(f => f.id !== fosterHomeId)) },
+                error: (err: HttpErrorResponse) => {
+                    if (err.status === 0) {
+                        this.errorMessage.set("Error de conexion, vuelvelo a intentar");
+                        window.scroll({ behavior: 'smooth', top: 0 });
+                    } else {
+                        this.errorMessage.set(err.error.message);
+                        window.scroll({ behavior: 'smooth', top: 0 });
+                    }
+                }
+            });
         }
-      }
-    })
-  }
+    }
+
+    // Pequeño formulario de creacion de casas de acogida
+    onCreateFosterHome() {
+
+        if (!this.fosterHomeForm.valid) {
+            this.errorMessage.set("Los datos del hogar no son correctos");
+            window.scroll({ behavior: 'smooth', top: 0 });
+            return;
+        }
+        this.errorMessage.set('');
+
+        this.fosterHomeService.createFosterHome(this.fosterHomeForm.getRawValue()).subscribe({
+            next: (data: FosterHomeDTO) => {
+                this.fosterHomes.update(list => [...list, data]);
+            },
+            error: (err: HttpErrorResponse) => {
+                if (err.status === 0) {
+                    this.errorMessage.set('Error de conexion, revisa si tienes internet');
+                    window.scroll({ behavior: 'smooth', top: 0 });
+                } else {
+                    this.errorMessage.set(err.error.message);
+                    window.scroll({ behavior: 'smooth', top: 0 });
+                }
+            }
+        })
+    }
 }

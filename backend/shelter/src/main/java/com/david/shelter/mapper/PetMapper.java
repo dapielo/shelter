@@ -27,7 +27,7 @@ public class PetMapper {
         );
     }
 
-    public static PetDTO toDTO(Pet pet) {
+    public static PetDTO toDTO(Pet pet, Double[] coordinates, String mapName) {
 
         return new PetDTO(
             pet.getId(), 
@@ -40,7 +40,9 @@ public class PetMapper {
             pet.getRegisteredAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), 
             pet.getFosterHome().getId(),
             pet.getStatus(),
-            pet.getImagePath()
+            pet.getImagePath(),
+            coordinates, 
+            mapName
         );
     }
 }

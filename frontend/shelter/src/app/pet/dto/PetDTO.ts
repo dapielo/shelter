@@ -9,5 +9,7 @@ export interface PetDTO {
     registeredAt?: string,
     fosterHomeId: number
     status?: string,
-    imagePath?: string
+    imagePath?: string,
+    coordinates: number[],
+    mapName: string
 }

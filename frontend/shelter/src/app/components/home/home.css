@@ -9,6 +9,7 @@
 .banner {
     width: 100%;
     animation: focus 1.2s ease-out both;
+    border-radius: 10px;
 }
 h1 {
     margin-inline: auto;
@@ -28,7 +29,7 @@ h2{
     font-weight: 100;
 }
 h3 {
-    margin-top: 140px;
+    margin-top: 100px;
     text-align: center;
     font-size: 1.5rem;
     font-weight: 100;
@@ -37,9 +38,6 @@ h3 {
     margin-top: 50px;
     display: flex;
     justify-content: space-between;
-}
-.banner{
-    border-radius: 5px;
 }
 .filter{
     margin-top: 50px;

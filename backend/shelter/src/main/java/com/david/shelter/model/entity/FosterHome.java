@@ -38,6 +38,9 @@ public class FosterHome {
     String name;
 
     @NotNull  
+    boolean active;
+
+    @NotNull  
     @Column (nullable = false)
     @Enumerated (EnumType.STRING)
     private Province province;
